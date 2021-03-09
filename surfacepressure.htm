@@ -1,0 +1,30 @@
+
+<h1>Surface Pressure Map</h1>
+<p>Check your answers.  Click on the stages of making the weather map to make sure you are drawing things correctly.</p>
+
+<script>
+function light(sw) {
+  var pic;
+  if (sw == 1) {
+    pic = "https://i.imgur.com/VkNPD9E.gif"
+  } else
+  if(sw == 2) {pic = "https://i.imgur.com/1w0NzFa.png"}
+  else
+  if(sw == 3) {pic = "https://i.imgur.com/TlwORyW.png"}
+   
+  else {
+    pic = "https://i.imgur.com/X7LXsCk.png"
+  }
+  document.getElementById('myImage').src = pic;
+}
+</script>
+
+<img id="myImage" src="https://i.imgur.com/VMpoHkp.png" width="400" height="240">
+
+<p>
+<button type="button" onclick="light(1)">First Step</button>
+<button type="button" onclick="light(2)">Second Step</button>
+<button type="button" onclick="light(3)">Third Step</button>
+<button type="button" onclick="light(4)">Fourth Step </button>
+</p>
+
