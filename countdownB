@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Countdown Timer</title>
+	<script>
+	window.onload = function() {
+		var canvas = document.createElement("canvas");
+		c = canvas.getContext("2d"),
+
+		canvas.width = 400;
+		canvas.height = 400;
+
+		weeks = 0;
+		days = 0;
+		hours = 0;
+		minutes = 0;
+		seconds = 0;
+		d = 0;
+
+		document.body.appendChild(canvas);
+
+		const duedate = new Date('October 27, 2021 23:59:59');
+
+		setInterval(function(){
+
+			var currentdate = new Date();
+			
+			c.fillStyle = 'gold';
+			c.fillRect(0,0,canvas.width,canvas.height);
+
+			d = duedate.getTime()-currentdate.getTime();
+			
+			// weeks = Math.floor( d/604800000 );
+			// d = d - weeks * 604800000;
+			
+			days = Math.floor( d/86400000 );
+			d = d - days * 86400000;
+
+			hours = Math.floor( d/3600000 );
+			d = d - hours * 3600000;
+
+			minutes = Math.floor( d/60000 );
+			d = d - minutes * 60000;
+			if (minutes < 10){
+				min = "0" + minutes;
+			}
+			else {
+				min = minutes;
+			}
+
+			seconds = Math.floor( d/1000 );
+			if (seconds < 10){
+				sec = "0" + seconds;
+			}
+			else {
+				sec = seconds;
+			}
+
+			c.font = "60px Comic Sans MS";
+			c.textAlign = "center";
+			c.fillStyle = "navy";
+			c.fillText("Your stuff", canvas.width/2, 75);
+			c.fillText("is due in", canvas.width/2, 150);
+			c.fillText(days + " days", canvas.width/2, 240);
+			c.fillText("and",canvas.width/2, 300);	
+			c.fillText(hours + ":" + min + ":" + sec, canvas.width/2, 360);
+		},500);
+
+	};
+
+	</script>
+	<style>
+		body.html{
+			margin : 0px;
+			padding : 0px;
+		}
+	</style>
+</head>
+<body>
+
+</body>
+</html>
