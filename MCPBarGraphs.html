@@ -1,0 +1,54 @@
+<h1>Mrs. Gastler's MCP Data</h1>
+<p>&nbsp;</p>
+<p>Important notes: </p>
+<ul>
+<li>I did not implement MCP until Spring of last school.  While I did have some elements during the fall, it was limited to organization and checkpoints.  I had started sharing instructional videos, but not requiring students to watch them, they were just there.</li>
+<li>Last year's students were allowed to retake tests but this year's students were not.</li>
+<li>Last year's students were allowed to retake tests but this year's students were not.</li>
+<li>Last year, the Unit 1 test was graded with the parts of the test being weighted proportional to the points in each part.  Units 2 and 3 were weighted 50/50.  This year, all tests are weighted proportionally.</li>
+<li>All tests this year have been modified to remove excess low level questions and up the rigor, including increasing the number of short answer questions in which students are asked to explain their reasoning.  Students last year did not have to do this.</li>
+</ul>
+<p>As a result of these things, I'm not sure comparing the values is all that meaningfull.  But, the trends in time, the progression from Unit 1 to Unit 3 when comparing last year to this year fascinate me.  I can't wait to see what next semester's data looks like.</p>
+</ul>
+<p>Below are the bar graphs I created to display the information.  Honestly, I couldn't decide how I wanted to display it, so I thought, "Why not all the ways??"  And here we are.  Click on the buttons below to display the differnt bar graphs.</p>
+
+
+
+
+<p></p>
+
+
+<script>
+function light(sw) {
+  var pic;
+  if (sw == 1) {pic = "https://i.imgur.com/EJkO2AR.png"} 
+  else
+  
+  if(sw == 2) {pic = "https://i.imgur.com/MfulAVB.png"}
+  else
+
+ if(sw == 3) {pic = "https://i.imgur.com/WC97jQP.png"}
+  else
+
+ if(sw == 4) {pic = "https://i.imgur.com/yX2hosR.png"}
+  else
+
+  if(sw == 5) {pic = "https://i.imgur.com/rhM0e6j.png"}
+
+ else {pic = "https://i.imgur.com/LDO3Le3.png"}
+
+
+
+  document.getElementById('myImage').src = pic;
+}
+</script>
+
+<img id="myImage" src="https://i.imgur.com/12c91NH.png" width="500" height="300">
+
+<p>
+<button type="button" onclick="light(1)">Unit 1 Overall Test Grades</button>
+<button type="button" onclick="light(2)">Unit 2 Overall Test Grades</button>
+<button type="button" onclick="light(3)">Unit 3 Overall Test Grades</button>
+<button type="button" onclick="light(4)">Fall 2021 Test Grades by Block</button>
+<button type="button" onclick="light(5)">Fall 2022 Test Grades by Block</button>
+<button type="button" onclick="light(6)">Overall Test Grades by Unit</button></p>
