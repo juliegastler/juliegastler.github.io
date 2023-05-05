@@ -20,13 +20,13 @@
 
 		document.body.appendChild(canvas);
 
-		const duedate = new Date('April 27, 2023 14:32:00');
+		const duedate = new Date('May 17, 2023 14:32:00');
 
 		setInterval(function(){
 
 			var currentdate = new Date();
 			
-			c.fillStyle = 'gold';
+			c.fillStyle = 'purple';
 			c.fillRect(0,0,canvas.width,canvas.height);
 
 			d = duedate.getTime()-currentdate.getTime();
@@ -59,7 +59,7 @@
 
 			c.font = "60px Comic Sans MS";
 			c.textAlign = "center";
-			c.fillStyle = "purple";
+			c.fillStyle = "gold";
 			c.fillText("The U6 test", canvas.width/2, 75);
 			c.fillText("is in", canvas.width/2, 150);
 			c.fillText(days + " days", canvas.width/2, 240);
