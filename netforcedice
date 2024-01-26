@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Set</title>
+    <style>
+        /* Add some styling for better visibility */
+        .dice {
+            display: inline-block;
+            margin: 10px;
+            font-size: 24px;
+            padding: 10px;
+            border: 1px solid #000;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HTML for the first die with numbers 1, 1, 2, 2, 3, and 4 -->
+<div class="dice" onclick="rollDice('numberDie')">
+    <p id="numberDieValue">Click to roll</p>
+</div>
+
+<!-- HTML for the second die with + and - signs -->
+<div class="dice" onclick="rollDice('signDie')">
+    <p id="signDieValue">Click to roll</p>
+</div>
+
+<script>
+    // JavaScript code to handle dice rolling
+    function rollDice(dieType) {
+        const numberDieValues = [1, 1, 2, 2, 3, 4];
+        const signDieValues = ['+', '+', '+', '-', '-', '-'];
+
+        const randomIndex = Math.floor(Math.random() * 6);
+
+        if (dieType === 'numberDie') {
+            const numberDieValue = numberDieValues[randomIndex];
+            document.getElementById('numberDieValue').innerText = numberDieValue;
+        } else if (dieType === 'signDie') {
+            const signDieValue = signDieValues[randomIndex];
+            document.getElementById('signDieValue').innerText = signDieValue;
+        }
+    }
+</script>
+
+</body>
+</html>
