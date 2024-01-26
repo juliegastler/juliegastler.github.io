@@ -55,7 +55,7 @@
         const randomIndex = Math.floor(Math.random() * 6);
         
         const dieElement = document.getElementById(dieType);
-        dieElement.style.setProperty('--rotation-angle', `${Math.random() < 0.5 ? 360 : -360}deg`);
+        dieElement.style.setProperty('--rotation-angle', `${Math.random() < 0.9 ? 360 : -360}deg`);
         dieElement.classList.add('rolling'); // Apply the rolling animation class
 
         setTimeout(() => {
