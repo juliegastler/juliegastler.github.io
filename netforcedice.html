@@ -13,18 +13,36 @@
             padding: 10px;
             border: 1px solid #000;
             cursor: pointer;
+            width: 60px; /* Set a fixed width */
+            height: 60px; /* Set a fixed height */
+            overflow: hidden;
+        }
+
+        /* Animation for rolling the dice */
+        @keyframes rollAnimation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Apply the animation to the dice when rolling */
+        .rolling {
+            animation: rollAnimation 1s ease-out;
         }
     </style>
 </head>
 <body>
 
 <!-- HTML for the first die with numbers 1, 1, 2, 2, 3, and 4 -->
-<div class="dice" onclick="rollDice('numberDie')">
+<div class="dice" id="numberDie" onclick="rollDice('numberDie')">
     <p id="numberDieValue">Click to roll</p>
 </div>
 
 <!-- HTML for the second die with + and - signs -->
-<div class="dice" onclick="rollDice('signDie')">
+<div class="dice" id="signDie" onclick="rollDice('signDie')">
     <p id="signDieValue">Click to roll</p>
 </div>
 
@@ -36,13 +54,21 @@
 
         const randomIndex = Math.floor(Math.random() * 6);
 
-        if (dieType === 'numberDie') {
-            const numberDieValue = numberDieValues[randomIndex];
-            document.getElementById('numberDieValue').innerText = numberDieValue;
-        } else if (dieType === 'signDie') {
-            const signDieValue = signDieValues[randomIndex];
-            document.getElementById('signDieValue').innerText = signDieValue;
-        }
+        const dieElement = document.getElementById(dieType);
+        dieElement.classList.add('rolling'); // Apply the rolling animation class
+
+        setTimeout(() => {
+            // Delayed execution to allow the animation to complete
+            dieElement.classList.remove('rolling'); // Remove the rolling animation class
+
+            if (dieType === 'numberDie') {
+                const numberDieValue = numberDieValues[randomIndex];
+                document.getElementById('numberDieValue').innerText = numberDieValue;
+            } else if (dieType === 'signDie') {
+                const signDieValue = signDieValues[randomIndex];
+                document.getElementById('signDieValue').innerText = signDieValue;
+            }
+        }, 1000); // Set the timeout to match the duration of the animation (1s in this case)
     }
 </script>
 
