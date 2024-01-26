@@ -64,8 +64,8 @@
             dieElement.classList.remove('rolling'); // Remove the rolling animation class
 
             if (dieType === 'numberDie') {
-                const numberDieValue = numberDieValues[randomIndex];
-                document.getElementById('numberDieValue').innerText = numberDieValue;
+                   const numberDieValue = numberDieValues[randomIndex];
+                document.getElementById('numberDieValue').innerText = `${numberDieValue} N`;
             } else if (dieType === 'signDie') {
                 const signDieValue = signDieValues[randomIndex];
                 document.getElementById('signDieValue').innerText = signDieValue;
