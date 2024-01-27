@@ -19,8 +19,8 @@
             width: 100%;
             height: 100%;
             transform-style: preserve-3d; /* Preserve 3D transformations */
-            transform: translateZ(-50px); /* Adjust the initial position for better visibility */
-            animation: rollAnimation 1s ease-out; /* Apply a smooth 3D spin during the roll */
+            transform: rotateX(0deg) rotateY(0deg); /* Initial position */
+            transition: transform 1s ease-out; /* Apply a smooth transition on transform changes */
         }
 
         .face {
@@ -84,14 +84,10 @@
         const randomIndex = Math.floor(Math.random() * 6);
 
         const dieElement = document.getElementById(dieType).querySelector('.cube');
-        dieElement.classList.remove('rolling'); // Remove the rolling animation class
-        void dieElement.offsetWidth; // Trigger reflow to reset the animation
-        dieElement.classList.add('rolling'); // Add the rolling animation class
+        dieElement.style.setProperty('--rotation-x', `${Math.random() * 360}deg`);
+        dieElement.style.setProperty('--rotation-y', `${Math.random() * 360}deg`);
 
         setTimeout(() => {
-            // Delayed execution to allow the animation to complete
-            dieElement.classList.remove('rolling'); // Remove the rolling animation class
-
             if (dieType === 'numberDie') {
                 const numberDieValue = numberDieValues[randomIndex];
                 document.getElementById('numberDieValue').innerText = `${numberDieValue} N`;
@@ -99,7 +95,7 @@
                 const signDieValue = signDieValues[randomIndex];
                 document.getElementById('signDieValue').innerText = signDieValue;
             }
-        }, 1000); // Set the timeout to match the duration of the animation (1s in this case)
+        }, 500); // Slight delay for better visual effect
     }
 </script>
 
