@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Styled Dice Set</title>
+    <title>Styled 3D Dice Set</title>
     <style>
         /* Add some styling for better visibility */
         .dice {
@@ -17,6 +17,8 @@
             overflow: hidden;
             text-align: center;
             font-weight: bold;
+            transform-style: preserve-3d; /* Preserve 3D transformations */
+            transition: transform 1s ease-out; /* Apply a smooth transition on transform changes */
         }
 
         /* Purple die with gold letters */
@@ -34,10 +36,10 @@
         /* Animation for rolling the dice */
         @keyframes rollAnimation {
             0% {
-                transform: rotate(0deg);
+                transform: rotateX(0deg) rotateY(0deg); /* Initial position */
             }
             100% {
-                transform: rotate(var(--rotation-angle));
+                transform: rotateX(var(--rotation-x)) rotateY(var(--rotation-y)); /* Rotated position */
             }
         }
 
@@ -68,7 +70,8 @@
         const randomIndex = Math.floor(Math.random() * 6);
 
         const dieElement = document.getElementById(dieType);
-        dieElement.style.setProperty('--rotation-angle', `${Math.random() < 0.5 ? 360 : -360}deg`);
+        dieElement.style.setProperty('--rotation-x', `${Math.random() * 180}deg`);
+        dieElement.style.setProperty('--rotation-y', `${Math.random() * 180}deg`);
         dieElement.classList.add('rolling'); // Apply the rolling animation class
 
         setTimeout(() => {
