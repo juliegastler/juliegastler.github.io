@@ -52,7 +52,7 @@
                 transform: rotateX(0deg) rotateY(0deg); /* Initial position */
             }
             100% {
-                transform: rotateX(1080deg) rotateY(720deg); /* Rotated position */
+                transform: rotateX(360deg) rotateY(360deg); /* Rotated position */
             }
         }
     </style>
@@ -84,10 +84,12 @@
         const randomIndex = Math.floor(Math.random() * 6);
 
         const dieElement = document.getElementById(dieType).querySelector('.cube');
+        dieElement.style.transform = ''; // Reset the transform to trigger a reflow
         dieElement.style.setProperty('--rotation-x', `${Math.random() * 360}deg`);
         dieElement.style.setProperty('--rotation-y', `${Math.random() * 360}deg`);
 
         setTimeout(() => {
+            dieElement.style.transform = 'rotateX(360deg) rotateY(360deg)'; // Apply the 3D spin animation
             if (dieType === 'numberDie') {
                 const numberDieValue = numberDieValues[randomIndex];
                 document.getElementById('numberDieValue').innerText = `${numberDieValue} N`;
@@ -95,7 +97,7 @@
                 const signDieValue = signDieValues[randomIndex];
                 document.getElementById('signDieValue').innerText = signDieValue;
             }
-        }, 500); // Slight delay for better visual effect
+        }, 50); // Slight delay for better visual effect
     }
 </script>
 
