@@ -3,35 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Styled 3D Dice Set</title>
+    <title>Styled Dice Set</title>
     <style>
         /* Add some styling for better visibility */
         .dice {
             display: inline-block;
             margin: 10px;
+            font-size: 24px;
+            padding: 10px;
             cursor: pointer;
             width: 100px; /* Set a fixed width */
             height: 100px; /* Set a fixed height */
-            perspective: 600px; /* Set perspective for 3D effect */
-        }
-
-        .cube {
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d; /* Preserve 3D transformations */
-            transform: rotateX(0deg) rotateY(0deg); /* Initial position */
-            transition: transform 1s ease-out; /* Apply a smooth transition on transform changes */
-        }
-
-        .face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+            overflow: hidden;
             text-align: center;
-            line-height: 100px; /* Match the height for centering text */
             font-weight: bold;
-            font-size: 18px;
-            backface-visibility: hidden; /* Hide the back face for a cleaner look */
         }
 
         /* Purple die with gold letters */
@@ -46,14 +31,19 @@
             color: purple;
         }
 
-        /* Apply the 3D spin animation during the roll */
+        /* Animation for rolling the dice */
         @keyframes rollAnimation {
             0% {
-                transform: rotateX(0deg) rotateY(0deg); /* Initial position */
+                transform: rotate(0deg);
             }
             100% {
-                transform: rotateX(360deg) rotateY(360deg); /* Rotated position */
+                transform: rotate(var(--rotation-angle));
             }
+        }
+
+        /* Apply the animation to the dice when rolling */
+        .rolling {
+            animation: rollAnimation 1s ease-out;
         }
     </style>
 </head>
@@ -61,18 +51,12 @@
 
 <!-- HTML for the first die with numbers 1 to 6 -->
 <div class="dice" id="numberDie" onclick="rollDice('numberDie')">
-    <div class="cube">
-        <div class="face" id="numberDieValue">Click to roll</div>
-        <!-- Add more faces as needed for each number -->
-    </div>
+    <p id="numberDieValue">Click to roll</p>
 </div>
 
 <!-- HTML for the second die with Forward and Backward signs -->
 <div class="dice" id="signDie" onclick="rollDice('signDie')">
-    <div class="cube">
-        <div class="face" id="signDieValue">Click to roll</div>
-        <!-- Add more faces as needed for each sign -->
-    </div>
+    <p id="signDieValue">Click to roll</p>
 </div>
 
 <script>
@@ -83,13 +67,14 @@
 
         const randomIndex = Math.floor(Math.random() * 6);
 
-        const dieElement = document.getElementById(dieType).querySelector('.cube');
-        dieElement.style.transform = ''; // Reset the transform to trigger a reflow
-        dieElement.style.setProperty('--rotation-x', `${Math.random() * 360}deg`);
-        dieElement.style.setProperty('--rotation-y', `${Math.random() * 360}deg`);
+        const dieElement = document.getElementById(dieType);
+        dieElement.style.setProperty('--rotation-angle', `${Math.random() < 0.5 ? 360 : -360}deg`);
+        dieElement.classList.add('rolling'); // Apply the rolling animation class
 
         setTimeout(() => {
-            dieElement.style.transform = 'rotateX(360deg) rotateY(360deg)'; // Apply the 3D spin animation
+            // Delayed execution to allow the animation to complete
+            dieElement.classList.remove('rolling'); // Remove the rolling animation class
+
             if (dieType === 'numberDie') {
                 const numberDieValue = numberDieValues[randomIndex];
                 document.getElementById('numberDieValue').innerText = `${numberDieValue} N`;
@@ -97,7 +82,7 @@
                 const signDieValue = signDieValues[randomIndex];
                 document.getElementById('signDieValue').innerText = signDieValue;
             }
-        }, 50); // Slight delay for better visual effect
+        }, 1000); // Set the timeout to match the duration of the animation (1s in this case)
     }
 </script>
 
