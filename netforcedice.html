@@ -9,16 +9,29 @@
         .dice {
             display: inline-block;
             margin: 10px;
-            font-size: 24px;
-            padding: 10px;
             cursor: pointer;
             width: 100px; /* Set a fixed width */
             height: 100px; /* Set a fixed height */
-            overflow: hidden;
-            text-align: center;
-            font-weight: bold;
+            perspective: 600px; /* Set perspective for 3D effect */
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
             transform-style: preserve-3d; /* Preserve 3D transformations */
-            transition: transform 1s ease-out; /* Apply a smooth transition on transform changes */
+            transform: translateZ(-50px); /* Adjust the initial position for better visibility */
+            animation: rollAnimation 1s ease-out; /* Apply a smooth 3D spin during the roll */
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            line-height: 100px; /* Match the height for centering text */
+            font-weight: bold;
+            font-size: 18px;
+            backface-visibility: hidden; /* Hide the back face for a cleaner look */
         }
 
         /* Purple die with gold letters */
@@ -33,19 +46,14 @@
             color: purple;
         }
 
-        /* Animation for rolling the dice */
+        /* Apply the 3D spin animation during the roll */
         @keyframes rollAnimation {
             0% {
                 transform: rotateX(0deg) rotateY(0deg); /* Initial position */
             }
             100% {
-                transform: rotateX(var(--rotation-x)) rotateY(var(--rotation-y)); /* Rotated position */
+                transform: rotateX(1080deg) rotateY(720deg); /* Rotated position */
             }
-        }
-
-        /* Apply the animation to the dice when rolling */
-        .rolling {
-            animation: rollAnimation 1s ease-out;
         }
     </style>
 </head>
@@ -53,12 +61,18 @@
 
 <!-- HTML for the first die with numbers 1 to 6 -->
 <div class="dice" id="numberDie" onclick="rollDice('numberDie')">
-    <p id="numberDieValue">Click to roll</p>
+    <div class="cube">
+        <div class="face" id="numberDieValue">Click to roll</div>
+        <!-- Add more faces as needed for each number -->
+    </div>
 </div>
 
 <!-- HTML for the second die with Forward and Backward signs -->
 <div class="dice" id="signDie" onclick="rollDice('signDie')">
-    <p id="signDieValue">Click to roll</p>
+    <div class="cube">
+        <div class="face" id="signDieValue">Click to roll</div>
+        <!-- Add more faces as needed for each sign -->
+    </div>
 </div>
 
 <script>
@@ -69,10 +83,10 @@
 
         const randomIndex = Math.floor(Math.random() * 6);
 
-        const dieElement = document.getElementById(dieType);
-        dieElement.style.setProperty('--rotation-x', `${Math.random() * 180}deg`);
-        dieElement.style.setProperty('--rotation-y', `${Math.random() * 180}deg`);
-        dieElement.classList.add('rolling'); // Apply the rolling animation class
+        const dieElement = document.getElementById(dieType).querySelector('.cube');
+        dieElement.classList.remove('rolling'); // Remove the rolling animation class
+        void dieElement.offsetWidth; // Trigger reflow to reset the animation
+        dieElement.classList.add('rolling'); // Add the rolling animation class
 
         setTimeout(() => {
             // Delayed execution to allow the animation to complete
