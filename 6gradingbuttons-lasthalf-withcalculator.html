@@ -74,9 +74,54 @@
       font-weight: bold;
     }
 
-    .half-button-container {
-      margin-top: 10px;
-      text-align: center;
+    /* Styles for Button 6 - three-state switch */
+    .switch-three-state {
+      position: relative;
+      display: inline-block;
+      width: 90px; /* Slightly wider for 3 states */
+      height: 34px;
+      margin: 10px;
+    }
+
+    .slider-three-state {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider-three-state:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    /* Midpoint state style */
+    .half-checked .slider-three-state {
+      background-color: #ffa500; /* Orange for half state */
+    }
+
+    .half-checked .slider-three-state:before {
+      transform: translateX(32px); /* Half position */
+    }
+
+    .full-checked .slider-three-state:before {
+      transform: translateX(56px); /* Full On position */
+    }
+
+    .full-checked .slider-three-state {
+      background-color: #4caf50;
     }
 
   </style>
@@ -126,14 +171,12 @@
       <span class="button-label">Button 5</span>
     </div>
 
-    <!-- Button 6 with dropdown for three states -->
-    <div class="half-button-container">
-      <label for="button6">Button 6</label>
-      <select id="button6">
-        <option value="0">Off</option>
-        <option value="0.5">Half</option>
-        <option value="1">On</option>
-      </select>
+    <!-- Button 6 with three states -->
+    <div>
+      <label class="switch-three-state" id="button6-container">
+        <span class="slider-three-state"></span>
+      </label>
+      <span class="button-label">Button 6 (Three-state)</span>
     </div>
   </div>
 
@@ -154,9 +197,13 @@
         }
       }
 
-      // Get the value from the dropdown for button 6
-      const button6Value = parseFloat(document.getElementById('button6').value);
-      buttonsOn += button6Value; // Add the value (0, 0.5, or 1)
+      // Get the state of button 6 (three-state switch)
+      const button6 = document.getElementById('button6-container');
+      if (button6.classList.contains('half-checked')) {
+        buttonsOn += 0.5; // Add 0.5 for half state
+      } else if (button6.classList.contains('full-checked')) {
+        buttonsOn += 1; // Add 1 for full state
+      }
 
       // Calculate percentage based on 6 buttons
       const percentage = (buttonsOn / 6) * 100;
@@ -174,8 +221,19 @@
       document.getElementById(`button${i}`).addEventListener('change', calculateScore);
     }
 
-    // Attach event listener to the dropdown for button 6
-    document.getElementById('button6').addEventListener('change', calculateScore);
+    // Logic to toggle through three states for Button 6
+    const button6 = document.getElementById('button6-container');
+    button6.addEventListener('click', function () {
+      if (button6.classList.contains('half-checked')) {
+        button6.classList.remove('half-checked');
+        button6.classList.add('full-checked'); // Full on
+      } else if (button6.classList.contains('full-checked')) {
+        button6.classList.remove('full-checked'); // Back to off
+      } else {
+        button6.classList.add('half-checked'); // Half on
+      }
+      calculateScore(); // Recalculate score after state change
+    });
 
   </script>
 
