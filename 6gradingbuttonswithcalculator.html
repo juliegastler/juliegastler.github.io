@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slide Toggle Buttons with Score</title>
+  <style>
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+      margin: 10px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #4caf50;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .button-label {
+      display: block;
+      margin-top: 5px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+
+    .result-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h2>Slide Toggle Buttons with Score Calculator</h2>
+
+  <div class="button-container">
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button1">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 1</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button2">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 2</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button3">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 3</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button4">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 4</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button5">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 5</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button6">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 6</span>
+    </div>
+  </div>
+
+  <div class="result-container">
+    <div class="result">Percentage of Buttons ON: <span id="percentage">0%</span></div>
+    <div class="result">Score out of 40: <span id="score">0</span></div>
+  </div>
+
+  <script>
+    function calculateScore() {
+      const totalButtons = 6; // Updated to 6 buttons
+      let buttonsOn = 0;
+
+      for (let i = 1; i <= totalButtons; i++) {
+        if (document.getElementById(`button${i}`).checked) {
+          buttonsOn++;
+        }
+      }
+
+      // Calculate percentage
+      const percentage = (buttonsOn / totalButtons) * 100;
+      
+      // Calculate score out of 40
+      const score = (buttonsOn / totalButtons) * 40;
+
+      // Update the displayed results
+      document.getElementById('percentage').textContent = `${percentage.toFixed(2)}%`;
+      document.getElementById('score').textContent = `${score.toFixed(2)}`;
+    }
+
+    // Attach event listeners to all buttons
+    for (let i = 1; i <= 6; i++) { // Updated to 6 buttons
+      document.getElementById(`button${i}`).addEventListener('change', calculateScore);
+    }
+
+  </script>
+
+</body>
+</html>
