@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Slide Toggle Button</title>
+  <title>Slide Toggle Buttons</title>
   <style>
     .switch {
       position: relative;
       display: inline-block;
       width: 60px;
       height: 34px;
+      margin: 10px;
     }
 
     .switch input {
@@ -50,27 +51,109 @@
       transform: translateX(26px);
     }
 
+    .button-label {
+      display: block;
+      margin-top: 5px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+
   </style>
 </head>
 <body>
 
-  <h2>Slide Toggle Button</h2>
+  <h2>Slide Toggle Buttons</h2>
 
-  <label class="switch">
-    <input type="checkbox" id="toggleSwitch">
-    <span class="slider"></span>
-  </label>
+  <div class="button-container">
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button1">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 1</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button2">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 2</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button3">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 3</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button4">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 4</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button5">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 5</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button6">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 6</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button7">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 7</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button8">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 8</span>
+    </div>
+
+    <div>
+      <label class="switch">
+        <input type="checkbox" id="button9">
+        <span class="slider"></span>
+      </label>
+      <span class="button-label">Button 9</span>
+    </div>
+  </div>
 
   <script>
-    const toggleSwitch = document.getElementById('toggleSwitch');
-
-    toggleSwitch.addEventListener('change', function () {
-      if (this.checked) {
-        console.log("Button is ON");
-      } else {
-        console.log("Button is OFF");
-      }
-    });
+    for (let i = 1; i <= 9; i++) {
+      document.getElementById(`button${i}`).addEventListener('change', function () {
+        if (this.checked) {
+          console.log(`Button ${i} is ON`);
+        } else {
+          console.log(`Button ${i} is OFF`);
+        }
+      });
+    }
   </script>
 
 </body>
