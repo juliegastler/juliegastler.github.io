@@ -74,6 +74,11 @@
       font-weight: bold;
     }
 
+    .half-button-container {
+      margin-top: 10px;
+      text-align: center;
+    }
+
   </style>
 </head>
 <body>
@@ -86,7 +91,7 @@
         <input type="checkbox" id="button1">
         <span class="slider"></span>
       </label>
-      <span class="button-label">A all Eg</span>
+      <span class="button-label">Button 1</span>
     </div>
 
     <div>
@@ -94,7 +99,7 @@
         <input type="checkbox" id="button2">
         <span class="slider"></span>
       </label>
-      <span class="button-label">C all Ek</span>
+      <span class="button-label">Button 2</span>
     </div>
 
     <div>
@@ -102,7 +107,7 @@
         <input type="checkbox" id="button3">
         <span class="slider"></span>
       </label>
-      <span class="button-label">A-C Eg decreases</span>
+      <span class="button-label">Button 3</span>
     </div>
 
     <div>
@@ -110,7 +115,7 @@
         <input type="checkbox" id="button4">
         <span class="slider"></span>
       </label>
-      <span class="button-label">A-C Ek increases</span>
+      <span class="button-label">Button 4</span>
     </div>
 
     <div>
@@ -118,15 +123,17 @@
         <input type="checkbox" id="button5">
         <span class="slider"></span>
       </label>
-      <span class="button-label">D has Eg and Eel</span>
+      <span class="button-label">Button 5</span>
     </div>
 
-    <div>
-      <label class="switch">
-        <input type="checkbox" id="button6">
-        <span class="slider"></span>
-      </label>
-      <span class="button-label">No extra energies</span>
+    <!-- Button 6 with dropdown for three states -->
+    <div class="half-button-container">
+      <label for="button6">Button 6</label>
+      <select id="button6">
+        <option value="0">Off</option>
+        <option value="0.5">Half</option>
+        <option value="1">On</option>
+      </select>
     </div>
   </div>
 
@@ -137,30 +144,38 @@
 
   <script>
     function calculateScore() {
-      const totalButtons = 6; // Updated to 6 buttons
+      const totalButtons = 5; // 5 regular buttons + 1 special button
       let buttonsOn = 0;
 
-      for (let i = 1; i <= totalButtons; i++) {
+      // Check regular buttons (1 to 5)
+      for (let i = 1; i <= 5; i++) {
         if (document.getElementById(`button${i}`).checked) {
           buttonsOn++;
         }
       }
 
-      // Calculate percentage
-      const percentage = (buttonsOn / totalButtons) * 100;
+      // Get the value from the dropdown for button 6
+      const button6Value = parseFloat(document.getElementById('button6').value);
+      buttonsOn += button6Value; // Add the value (0, 0.5, or 1)
+
+      // Calculate percentage based on 6 buttons
+      const percentage = (buttonsOn / 6) * 100;
       
       // Calculate score out of 40
-      const score = (buttonsOn / totalButtons) * 40;
+      const score = (buttonsOn / 6) * 40;
 
       // Update the displayed results
       document.getElementById('percentage').textContent = `${percentage.toFixed(2)}%`;
       document.getElementById('score').textContent = `${score.toFixed(2)}`;
     }
 
-    // Attach event listeners to all buttons
-    for (let i = 1; i <= 6; i++) { // Updated to 6 buttons
+    // Attach event listeners to the 5 regular buttons
+    for (let i = 1; i <= 5; i++) {
       document.getElementById(`button${i}`).addEventListener('change', calculateScore);
     }
+
+    // Attach event listener to the dropdown for button 6
+    document.getElementById('button6').addEventListener('change', calculateScore);
 
   </script>
 
