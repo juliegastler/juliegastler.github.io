@@ -3,23 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Slide Toggle Buttons with Score</title>
+  <title>Three-State Toggle Buttons with Score</title>
   <style>
-    .switch {
+    .switch-three-state {
       position: relative;
       display: inline-block;
-      width: 60px;
+      width: 90px; /* Slightly wider for 3 states */
       height: 34px;
       margin: 10px;
     }
 
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
+    .slider-three-state {
       position: absolute;
       cursor: pointer;
       top: 0;
@@ -31,7 +25,7 @@
       border-radius: 34px;
     }
 
-    .slider:before {
+    .slider-three-state:before {
       position: absolute;
       content: "";
       height: 26px;
@@ -43,12 +37,21 @@
       border-radius: 50%;
     }
 
-    input:checked + .slider {
-      background-color: #4caf50;
+    /* Midpoint state style */
+    .half-checked .slider-three-state {
+      background-color: #ffa500; /* Orange for half state */
     }
 
-    input:checked + .slider:before {
-      transform: translateX(26px);
+    .half-checked .slider-three-state:before {
+      transform: translateX(32px); /* Half position */
+    }
+
+    .full-checked .slider-three-state:before {
+      transform: translateX(56px); /* Full On position */
+    }
+
+    .full-checked .slider-three-state {
+      background-color: #4caf50;
     }
 
     .button-label {
@@ -78,79 +81,70 @@
 </head>
 <body>
 
-  <h2>Slide Toggle Buttons with Score Calculator</h2>
+  <h2>Three-State Toggle Buttons with Score Calculator</h2>
 
   <div class="button-container">
     <div>
-      <label class="switch">
-        <input type="checkbox" id="button1">
-        <span class="slider"></span>
+      <label class="switch-three-state" id="button1">
+        <span class="slider-three-state"></span>
       </label>
-      <span class="button-label">Eg Initial</span>
+      <span class="button-label">Button 1</span>
     </div>
 
     <div>
-      <label class="switch">
-        <input type="checkbox" id="button2">
-        <span class="slider"></span>
+      <label class="switch-three-state" id="button2">
+        <span class="slider-three-state"></span>
       </label>
-      <span class="button-label">Ek Initial</span>
+      <span class="button-label">Button 2</span>
     </div>
 
     <div>
-      <label class="switch">
-        <input type="checkbox" id="button3">
-        <span class="slider"></span>
+      <label class="switch-three-state" id="button3">
+        <span class="slider-three-state"></span>
       </label>
-      <span class="button-label">Eelas Final</span>
+      <span class="button-label">Button 3</span>
     </div>
 
     <div>
-      <label class="switch">
-        <input type="checkbox" id="button4">
-        <span class="slider"></span>
+      <label class="switch-three-state" id="button4">
+        <span class="slider-three-state"></span>
       </label>
-      <span class="button-label">Eth Final</span>
+      <span class="button-label">Button 4</span>
     </div>
 
     <div>
-      <label class="switch">
-        <input type="checkbox" id="button5">
-        <span class="slider"></span>
+      <label class="switch-three-state" id="button5">
+        <span class="slider-three-state"></span>
       </label>
-      <span class="button-label">No Eel Iniial</span>
+      <span class="button-label">Button 5</span>
     </div>
 
     <div>
-      <label class="switch">
-        <input type="checkbox" id="button6">
-        <span class="slider"></span>
+      <label class="switch-three-state" id="button6">
+        <span class="slider-three-state"></span>
       </label>
-      <span class="button-label">Initial Bars = Final Bars</span>
+      <span class="button-label">Button 6</span>
     </div>
 
     <div>
-      <label class="switch">
-        <input type="checkbox" id="button7">
-        <span class="slider"></span>
+      <label class="switch-three-state" id="button7">
+        <span class="slider-three-state"></span>
       </label>
-      <span class="button-label">System filled</span>
+      <span class="button-label">Button 7</span>
     </div>
 
     <div>
-      <label class="switch">
-        <input type="checkbox" id="button8">
-        <span class="slider"></span>
+      <label class="switch-three-state" id="button8">
+        <span class="slider-three-state"></span>
       </label>
-      <span class="button-label">Closed</span>
+      <span class="button-label">Button 8</span>
     </div>
 
     <div>
-      <label class="switch">
-        <input type="checkbox" id="button9">
-        <span class="slider"></span>
+      <label class="switch-three-state" id="button9">
+        <span class="slider-three-state"></span>
       </label>
-      <span class="button-label">Math Matches half or all</span>
+      <span class="button-label">Button 9</span>
     </div>
   </div>
 
@@ -161,16 +155,20 @@
 
   <script>
     function calculateScore() {
-      const totalButtons = 9;
+      const totalButtons = 9; // 9 three-state buttons
       let buttonsOn = 0;
 
+      // Check the state of each button (three-state switches)
       for (let i = 1; i <= totalButtons; i++) {
-        if (document.getElementById(`button${i}`).checked) {
-          buttonsOn++;
+        const button = document.getElementById(`button${i}`);
+        if (button.classList.contains('half-checked')) {
+          buttonsOn += 0.5; // Half state
+        } else if (button.classList.contains('full-checked')) {
+          buttonsOn += 1; // Full state
         }
       }
 
-      // Calculate percentage
+      // Calculate percentage based on 9 buttons
       const percentage = (buttonsOn / totalButtons) * 100;
       
       // Calculate score out of 40
@@ -181,9 +179,25 @@
       document.getElementById('score').textContent = `${score.toFixed(2)}`;
     }
 
+    // Logic to toggle through three states for all buttons
+    function toggleThreeState(button) {
+      if (button.classList.contains('half-checked')) {
+        button.classList.remove('half-checked');
+        button.classList.add('full-checked'); // Full on
+      } else if (button.classList.contains('full-checked')) {
+        button.classList.remove('full-checked'); // Back to off
+      } else {
+        button.classList.add('half-checked'); // Half on
+      }
+      calculateScore(); // Recalculate score after state change
+    }
+
     // Attach event listeners to all buttons
     for (let i = 1; i <= 9; i++) {
-      document.getElementById(`button${i}`).addEventListener('change', calculateScore);
+      const button = document.getElementById(`button${i}`);
+      button.addEventListener('click', function () {
+        toggleThreeState(button);
+      });
     }
 
   </script>
