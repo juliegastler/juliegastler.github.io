@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Three-State Toggle Buttons with Score</title>
+  <title>Three-State Toggle Buttons with Reset</title>
   <style>
     .switch-three-state {
       position: relative;
       display: inline-block;
-      width: 90px; /* Slightly wider for 3 states */
+      width: 90px;
       height: 34px;
       margin: 10px;
     }
@@ -37,17 +37,16 @@
       border-radius: 50%;
     }
 
-    /* Midpoint state style */
     .half-checked .slider-three-state {
-      background-color: #ffa500; /* Orange for half state */
+      background-color: #ffa500;
     }
 
     .half-checked .slider-three-state:before {
-      transform: translateX(32px); /* Half position */
+      transform: translateX(32px);
     }
 
     .full-checked .slider-three-state:before {
-      transform: translateX(56px); /* Full On position */
+      transform: translateX(56px);
     }
 
     .full-checked .slider-three-state {
@@ -77,11 +76,27 @@
       font-weight: bold;
     }
 
+    .reset-button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #f44336;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .reset-button:hover {
+      background-color: #d32f2f;
+    }
+
   </style>
 </head>
 <body>
 
-  <h2>Three-State Toggle Buttons with Score Calculator</h2>
+  <h2>6 Three-State Toggle Buttons with Reset</h2>
 
   <div class="button-container">
     <div>
@@ -123,7 +138,7 @@
       <label class="switch-three-state" id="button6">
         <span class="slider-three-state"></span>
       </label>
-      <span class="button-label">No extra E</span>
+      <span class="button-label">No Estra E</span>
     </div>
   </div>
 
@@ -132,46 +147,42 @@
     <div class="result">Score out of 40: <span id="score">0</span></div>
   </div>
 
+  <!-- Reset button -->
+  <button class="reset-button" id="resetButton">Reset All</button>
+
   <script>
     function calculateScore() {
-      const totalButtons = 6; // 6 three-state buttons
+      const totalButtons = 6;
       let buttonsOn = 0;
 
-      // Check the state of each button (three-state switches)
       for (let i = 1; i <= totalButtons; i++) {
         const button = document.getElementById(`button${i}`);
         if (button.classList.contains('half-checked')) {
-          buttonsOn += 0.5; // Half state
+          buttonsOn += 0.5;
         } else if (button.classList.contains('full-checked')) {
-          buttonsOn += 1; // Full state
+          buttonsOn += 1;
         }
       }
 
-      // Calculate percentage based on 6 buttons
       const percentage = (buttonsOn / totalButtons) * 100;
-      
-      // Calculate score out of 40
       const score = (buttonsOn / totalButtons) * 40;
 
-      // Update the displayed results
       document.getElementById('percentage').textContent = `${percentage.toFixed(2)}%`;
       document.getElementById('score').textContent = `${score.toFixed(2)}`;
     }
 
-    // Logic to toggle through three states for all buttons
     function toggleThreeState(button) {
       if (button.classList.contains('half-checked')) {
         button.classList.remove('half-checked');
-        button.classList.add('full-checked'); // Full on
+        button.classList.add('full-checked');
       } else if (button.classList.contains('full-checked')) {
-        button.classList.remove('full-checked'); // Back to off
+        button.classList.remove('full-checked');
       } else {
-        button.classList.add('half-checked'); // Half on
+        button.classList.add('half-checked');
       }
-      calculateScore(); // Recalculate score after state change
+      calculateScore();
     }
 
-    // Attach event listeners to all buttons
     for (let i = 1; i <= 6; i++) {
       const button = document.getElementById(`button${i}`);
       button.addEventListener('click', function () {
@@ -179,6 +190,17 @@
       });
     }
 
+    // Reset function
+    function resetButtons() {
+      for (let i = 1; i <= 6; i++) {
+        const button = document.getElementById(`button${i}`);
+        button.classList.remove('half-checked', 'full-checked');
+      }
+      calculateScore(); // Reset the score to 0 after resetting buttons
+    }
+
+    // Attach event listener to reset button
+    document.getElementById('resetButton').addEventListener('click', resetButtons);
   </script>
 
 </body>
