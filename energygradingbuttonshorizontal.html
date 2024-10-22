@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Combined Three-State Toggle Buttons</title>
+  <style>
+    .switch-three-state {
+      position: relative;
+      display: inline-block;
+      width: 90px;
+      height: 34px;
+      margin: 10px;
+    }
+
+    .slider-three-state {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider-three-state:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    .half-checked .slider-three-state {
+      background-color: #ffa500;
+    }
+
+    .half-checked .slider-three-state:before {
+      transform: translateX(32px);
+    }
+
+    .full-checked .slider-three-state:before {
+      transform: translateX(56px);
+    }
+
+    .full-checked .slider-three-state {
+      background-color: #4caf50;
+    }
+
+    .button-label {
+      display: block;
+      margin-top: 5px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+
+    .result-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .reset-button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #f44336;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .reset-button:hover {
+      background-color: #d32f2f;
+    }
+
+    /* Container Box */
+    .container-box {
+      border: 2px solid #000;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+    }
+
+    .container-box h3 {
+      text-align: center;
+    }
+
+    /* Container for placing both boxes side by side */
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .reset-all-button {
+      display: block;
+      margin: 20px auto;
+      padding: 15px 30px;
+      background-color: #f44336;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .reset-all-button:hover {
+      background-color: #d32f2f;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Container to hold both boxes side by side -->
+  <div class="container">
+    <!-- 6 Button Section -->
+    <div class="container-box">
+      <h3>6-Button Section</h3>
+      <div class="button-container">
+        <div>
+          <label class="switch-three-state" id="button1-6">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 1</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button2-6">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 2</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button3-6">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 3</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button4-6">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 4</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button5-6">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 5</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button6-6">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 6</span>
+        </div>
+      </div>
+
+      <div class="result-container">
+        <div class="result">Percentage of Buttons ON: <span id="percentage-6">0%</span></div>
+        <div class="result">Score out of 40: <span id="score-6">0</span></div>
+      </div>
+    </div>
+
+    <!-- 9 Button Section -->
+    <div class="container-box">
+      <h3>9-Button Section</h3>
+      <div class="button-container">
+        <div>
+          <label class="switch-three-state" id="button1-9">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 1</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button2-9">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 2</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button3-9">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 3</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button4-9">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 4</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button5-9">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 5</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button6-9">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 6</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button7-9">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 7</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button8-9">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 8</span>
+        </div>
+        <div>
+          <label class="switch-three-state" id="button9-9">
+            <span class="slider-three-state"></span>
+          </label>
+          <span class="button-label">Button 9</span>
+        </div>
+      </div>
+
+      <div class="result-container">
+        <div class="result">Percentage of Buttons ON: <span id="percentage-9">0%</span></div>
+        <div class="result">Score out of 40: <span id="score-9">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset All Button -->
+  <button class="reset-all-button" id="resetAllButton">Reset All</button>
+
+  <script>
+    // Calculate score for the 6-button set
+    function calculateScore6() {
+      const totalButtons = 6;
+      let buttonsOn = 0;
+
+      for (let i = 1; i <= totalButtons; i++) {
+        const button = document.getElementById(`button${i}-6`);
+        if (button.classList.contains('half-checked')) {
+          buttonsOn += 0.5;
+        } else if (button.classList.contains('full-checked')) {
+          buttonsOn += 1;
+        }
+      }
+
+      const percentage = (buttonsOn / totalButtons) * 100;
+      const score = (buttonsOn / totalButtons) * 40;
+
+      document.getElementById('percentage-6').textContent = `${percentage.toFixed(2)}%`;
+      document.getElementById('score-6').textContent = `${score.toFixed(2)}`;
+    }
+
+    // Calculate score for the 9-button set
+    function calculateScore9() {
+      const totalButtons = 9;
+      let buttonsOn = 0;
+
+      for (let i = 1; i <= totalButtons; i++) {
+        const button = document.getElementById(`button${i}-9`);
+        if (button.classList.contains('half-checked')) {
+          buttonsOn += 0.5;
+        } else if (button.classList.contains('full-checked')) {
+          buttonsOn += 1;
+        }
+      }
+
+      const percentage = (buttonsOn / totalButtons) * 100;
+      const score = (buttonsOn / totalButtons) * 40;
+
+      document.getElementById('percentage-9').textContent = `${percentage.toFixed(2)}%`;
+      document.getElementById('score-9').textContent = `${score.toFixed(2)}`;
+    }
+
+    // Toggle between states for both sets
+    function toggleThreeState(button) {
+      if (button.classList.contains('half-checked')) {
+        button.classList.remove('half-checked');
+        button.classList.add('full-checked');
+      } else if (button.classList.contains('full-checked')) {
+        button.classList.remove('full-checked');
+      } else {
+        button.classList.add('half-checked');
+      }
+      if (button.id.includes('-6')) {
+        calculateScore6();
+      } else {
+        calculateScore9();
+      }
+    }
+
+    // Attach event listeners to the 6-button set
+    for (let i = 1; i <= 6; i++) {
+      const button = document.getElementById(`button${i}-6`);
+      button.addEventListener('click', function () {
+        toggleThreeState(button);
+      });
+    }
+
+    // Attach event listeners to the 9-button set
+    for (let i = 1; i <= 9; i++) {
+      const button = document.getElementById(`button${i}-9`);
+      button.addEventListener('click', function () {
+        toggleThreeState(button);
+      });
+    }
+
+    // Reset 6-button set
+    function resetButtons6() {
+      for (let i = 1; i <= 6; i++) {
+        const button = document.getElementById(`button${i}-6`);
+        button.classList.remove('half-checked', 'full-checked');
+      }
+      calculateScore6();
+    }
+
+    // Reset 9-button set
+    function resetButtons9() {
+      for (let i = 1; i <= 9; i++) {
+        const button = document.getElementById(`button${i}-9`);
+        button.classList.remove('half-checked', 'full-checked');
+      }
+      calculateScore9();
+    }
+
+    // Reset all buttons
+    function resetAllButtons() {
+      resetButtons6();
+      resetButtons9();
+    }
+
+    // Attach event listener to Reset All button
+    document.getElementById('resetAllButton').addEventListener('click', resetAllButtons);
+  </script>
+
+</body>
+</html>
