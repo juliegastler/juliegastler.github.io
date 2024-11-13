@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Four Sets of Three-State Buttons</title>
+  <style>
+    .switch-three-state {
+      position: relative;
+      display: inline-block;
+      width: 90px;
+      height: 34px;
+      margin: 10px;
+    }
+
+    .slider-three-state {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider-three-state:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    .half-checked .slider-three-state {
+      background-color: #ffa500;
+    }
+
+    .half-checked .slider-three-state:before {
+      transform: translateX(32px);
+    }
+
+    .full-checked .slider-three-state:before {
+      transform: translateX(56px);
+    }
+
+    .full-checked .slider-three-state {
+      background-color: #4caf50;
+    }
+
+    .button-label {
+      display: block;
+      margin-top: 5px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .table-container {
+      border: 2px solid #000;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .button-set {
+      display: flex;
+      justify-content: space-around;
+      margin: 15px 0;
+    }
+
+    .result-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .reset-button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #f44336;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .reset-button:hover {
+      background-color: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="table-container">
+    <h3>Button Sets</h3>
+
+    <!-- Button Set 1 (5 Buttons) -->
+    <div class="button-set">
+      <label class="switch-three-state" id="button1-1">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button2-1">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button3-1">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button4-1">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button5-1">
+        <span class="slider-three-state"></span>
+      </label>
+    </div>
+
+    <!-- Button Set 2 (5 Buttons) -->
+    <div class="button-set">
+      <label class="switch-three-state" id="button1-2">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button2-2">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button3-2">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button4-2">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button5-2">
+        <span class="slider-three-state"></span>
+      </label>
+    </div>
+
+    <!-- Button Set 3 (5 Buttons) -->
+    <div class="button-set">
+      <label class="switch-three-state" id="button1-3">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button2-3">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button3-3">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button4-3">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button5-3">
+        <span class="slider-three-state"></span>
+      </label>
+    </div>
+
+    <!-- Button Set 4 (4 Buttons) -->
+    <div class="button-set">
+      <label class="switch-three-state" id="button1-4">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button2-4">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button3-4">
+        <span class="slider-three-state"></span>
+      </label>
+      <label class="switch-three-state" id="button4-4">
+        <span class="slider-three-state"></span>
+      </label>
+    </div>
+
+    <!-- Score Display -->
+    <div class="result-container">
+      <div class="result">Total Score out of 10: <span id="score">0</span></div>
+    </div>
+
+    <!-- Reset Button -->
+    <button class="reset-button" id="resetButton">Reset All</button>
+  </div>
+
+  <script>
+    const totalButtons = 19; // 15 buttons from 3 sets of 5 + 4 buttons from the last set
+
+    // Function to calculate the total score for all button sets
+    function calculateScore() {
+      let buttonsOn = 0;
+
+      for (let i = 1; i <= 3; i++) { // Iterate over the first 3 sets (5 buttons each)
+        for (let j = 1; j <= 5; j++) {
+          const button = document.getElementById(`button${j}-${i}`);
+          if (button.classList.contains('half-checked')) {
+            buttonsOn += 0.5;
+          } else if (button.classList.contains('full-checked')) {
+            buttonsOn += 1;
+          }
+        }
+      }
+
+      for (let k = 1; k <= 4; k++) { // Iterate over the last set (4 buttons)
+        const button = document.getElementById(`button${k}-4`);
+        if (button.classList.contains('half-checked')) {
+          buttonsOn += 0.5;
+        } else if (button.classList.contains('full-checked')) {
+          buttonsOn += 1;
+        }
+      }
+
+      const score = (buttonsOn / totalButtons) * 10; // Total score out of 10
+      document.getElementById('score').textContent = `${score.toFixed(2)}`;
+    }
+
+    // Function to toggle between states for buttons
+    function toggleThreeState(button) {
+      if (button.classList.contains('half-checked')) {
+        button.classList.remove('half-checked');
+        button.classList.add('full-checked');
+      } else if (button.classList.contains('full-checked')) {
+        button.classList.remove('full-checked');
+      } else {
+        button.classList.add('half-checked');
+      }
+      calculateScore();
+    }
+
+    // Attach event listeners to all buttons
+    for (let i = 1; i <= 3; i++) { // For the first 3 sets (5 buttons each)
+      for (let j = 1; j <= 5; j++) {
+        const button = document.getElementById(`button${j}-${i}`);
+        button.addEventListener('click', function () {
+          toggleThreeState(button);
+        });
+      }
+    }
+
+    for (let k = 1; k <= 4; k++) { // For the last set (4 buttons)
+      const button = document.getElementById(`button${k}-4`);
+      button.addEventListener('click', function () {
+        toggleThreeState(button);
+      });
+    }
+
+    // Function to reset all buttons
+    function resetAllButtons() {
+      for (let i = 1; i <= 3; i++) { // Reset the first 3 sets (5 buttons each)
+        for (let j = 1; j <= 5; j++) {
+          const button = document.getElementById(`button${j}-${i}`);
+          button.classList.remove('half-checked', 'full-checked');
+        }
+      }
+
+      for (let k = 1; k <= 4; k++) { // Reset the last set (4 buttons)
+        const button = document.getElementById(`button${k}-4`);
+        button.classList.remove('half-checked', 'full-checked');
+      }
+      calculateScore(); // Reset the score to 0 after resetting all buttons
+    }
+
+    // Attach event listener to Reset All button
+    document.getElementById('resetButton').addEventListener('click', resetAllButtons);
+  </script>
+
+</body>
+</html>
