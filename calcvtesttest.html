@@ -184,7 +184,7 @@
       </div>
     </div>
 
-    <!-- Button Set 3 (5 Buttons) -->
+    <!-- Button Set 3 (2 Buttons) -->
     <div class="button-set">
       <div class="button-wrapper">
         <div class="button-label">Convert</div>
@@ -195,24 +195,6 @@
       <div class="button-wrapper">
         <div class="button-label">&Delta;x=v&#8226 t</div>
         <label class="switch-three-state" id="button2-3">
-          <span class="slider-three-state"></span>
-        </label>
-      </div>
-      <div class="button-wrapper">
-        <div class="button-label">Work</div>
-        <label class="switch-three-state" id="button3-3">
-          <span class="slider-three-state"></span>
-        </label>
-      </div>
-      <div class="button-wrapper">
-        <div class="button-label">Answer</div>
-        <label class="switch-three-state" id="button4-3">
-          <span class="slider-three-state"></span>
-        </label>
-      </div>
-      <div class="button-wrapper">
-        <div class="button-label">Unit</div>
-        <label class="switch-three-state" id="button5-3">
           <span class="slider-three-state"></span>
         </label>
       </div>
@@ -279,7 +261,7 @@
           buttonsOn += 1;
         }
       }
-      const score = (buttonsOn / totalButtons) * 10;
+      const score = (buttonsOn / totalButtons) * 1;
       document.getElementById('score').textContent = `${score.toFixed(2)}`;
     }
 
