@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grading Buttons</title>
+  <style>
+    .button-set {
+      margin-bottom: 20px;
+    }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .grade-button {
+      padding: 10px;
+      min-width: 80px;
+      text-align: center;
+      background-color: #ccc;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .state-0 { background-color: #ccc; }
+    .state-1 { background-color: #ffdd57; }
+    .state-2 { background-color: #4caf50; color: white; }
+    #totalDisplay {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Grading Buttons</h1>
+
+  <div class="button-set" id="set1">
+    <div class="button-row">
+      <button class="grade-button" data-label="arrow 1">arrow 1</button>
+      <button class="grade-button" data-label="arrow 2">arrow 2</button>
+      <button class="grade-button" data-label="work">work</button>
+      <button class="grade-button" data-label="answer">answer</button>
+      <button class="grade-button" data-label="formula">formula</button>
+      <button class="grade-button" data-label="work">work</button>
+      <button class="grade-button" data-label="number">number</button>
+      <button class="grade-button" data-label="unit">unit</button>
+    </div>
+  </div>
+
+  <div class="button-set" id="set2">
+    <div class="button-row">
+      <button class="grade-button" data-label="arrow 1">arrow 1</button>
+      <button class="grade-button" data-label="arrow 2">arrow 2</button>
+      <button class="grade-button" data-label="work">work</button>
+      <button class="grade-button" data-label="answer">answer</button>
+      <button class="grade-button" data-label="formula">formula</button>
+      <button class="grade-button" data-label="work">work</button>
+      <button class="grade-button" data-label="number">number</button>
+      <button class="grade-button" data-label="unit">unit</button>
+    </div>
+  </div>
+
+  <div class="button-set" id="set3">
+    <div class="button-row">
+      <button class="grade-button" data-label="formula">formula</button>
+      <button class="grade-button" data-label="work">work</button>
+      <button class="grade-button" data-label="number">number</button>
+      <button class="grade-button" data-label="unit">unit</button>
+    </div>
+  </div>
+
+  <button onclick="resetAll()">Reset All</button>
+  <div id="totalDisplay">Total: 0</div>
+
+  <script>
+    const buttons = document.querySelectorAll('.grade-button');
+
+    buttons.forEach(btn => {
+      btn.dataset.state = 0;
+      updateButtonStyle(btn);
+      btn.addEventListener('click', () => {
+        btn.dataset.state = (parseInt(btn.dataset.state) + 1) % 3;
+        updateButtonStyle(btn);
+        updateTotal();
+      });
+    });
+
+    function updateButtonStyle(btn) {
+      btn.classList.remove('state-0', 'state-1', 'state-2');
+      btn.classList.add(`state-${btn.dataset.state}`);
+    }
+
+    function resetAll() {
+      buttons.forEach(btn => {
+        btn.dataset.state = 0;
+        updateButtonStyle(btn);
+      });
+      updateTotal();
+    }
+
+    function updateTotal() {
+      let total = 0;
+      buttons.forEach(btn => {
+        total += parseInt(btn.dataset.state);
+      });
+      document.getElementById('totalDisplay').textContent = `Total: ${total}`;
+    }
+  </script>
+</body>
+</html>
