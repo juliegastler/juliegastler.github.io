@@ -5,8 +5,22 @@
   <title>Lesson Grading Buttons</title>
   <style>
     .section { margin-bottom: 30px; }
-    .button-set { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-    .btn { padding: 5px 15px; cursor: pointer; border: 1px solid #aaa; border-radius: 5px; }
+    .button-set {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      padding: 10px;
+      border: 3px solid #444;
+      border-radius: 10px;
+    }
+    .btn {
+      padding: 5px 15px;
+      cursor: pointer;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+      background-color: white;
+    }
     .label { font-weight: bold; }
     .controls { margin-top: 20px; }
   </style>
@@ -31,6 +45,10 @@
   <script>
     let allButtons = [];
 
+    function applyColor(btn, value) {
+      btn.style.backgroundColor = value === 1 ? "lightgreen" : value === 0.5 ? "khaki" : "white";
+    }
+
     function createButtons(section, count, options, labelPrefix = "Button") {
       const div = document.createElement('div');
       div.className = 'button-set';
@@ -44,6 +62,7 @@
         btn.dataset.options = JSON.stringify(options);
         btn.dataset.label = labelPrefix;
         btn.dataset.set = allButtons.length;
+        applyColor(btn, 0);
         btn.addEventListener('click', () => {
           const index = parseInt(btn.dataset.index);
           const opt = JSON.parse(btn.dataset.options);
@@ -52,6 +71,7 @@
           const next = opt[(idx + 1) % opt.length];
           values[index] = next;
           btn.innerText = `${labelPrefix} ${index + 1}: ${next}`;
+          applyColor(btn, next);
           updateTotals();
         });
         div.appendChild(btn);
@@ -98,11 +118,13 @@
       btn.dataset.label = 'Button';
       btn.dataset.set = allButtons.length;
       btn.dataset.options = JSON.stringify(options);
+      applyColor(btn, 0);
       btn.addEventListener('click', () => {
         let idx = options.indexOf(lesson4Vals[i]);
         let next = options[(idx + 1) % options.length];
         lesson4Vals[i] = next;
         btn.innerText = `Button ${i + 1}: ${next}`;
+        applyColor(btn, next);
         updateTotals();
       });
       l4Btns.appendChild(btn);
@@ -144,11 +166,15 @@
         group.buttons.forEach((btn, i) => {
           group.values[i] = 0;
           btn.innerText = `${btn.dataset.label} ${parseInt(btn.dataset.index) + 1}: 0`;
+          applyColor(btn, 0);
         });
       });
       lesson4Vals.fill(0);
       const l4 = document.querySelectorAll(".section:nth-of-type(4) .btn");
-      l4.forEach((btn, i) => btn.innerText = `Button ${i + 1}: 0`);
+      l4.forEach((btn, i) => {
+        btn.innerText = `Button ${i + 1}: 0`;
+        applyColor(btn, 0);
+      });
       updateTotals();
     }
 
