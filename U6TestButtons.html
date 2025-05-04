@@ -1,199 +1,173 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Lesson Grading Buttons</title>
-  <style>
-    .section { margin-bottom: 30px; }
-    .button-set {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-      padding: 10px;
-      border: 3px solid #444;
-      border-radius: 10px;
-    }
-    .btn {
-      padding: 5px 15px;
-      cursor: pointer;
-      border: 1px solid #aaa;
-      border-radius: 5px;
-      background-color: white;
-    }
-    .label { font-weight: bold; }
-    .controls { margin-top: 20px; }
-  </style>
-</head>
-<body>
-
-  <div id="container"></div>
-
-  <div class="controls">
-    <button onclick="resetAll()">Reset All</button>
-    <button onclick="exportScores()">Export Scores</button>
-  </div>
-
-  <div style="margin-top:30px">
-    <div><span class="label">Lesson 1 Total:</span> <span id="lesson1Total">0</span> / 6</div>
-    <div><span class="label">Lesson 4 Total:</span> <span id="lesson4Total">0</span> / 40</div>
-    <div><span class="label">Lesson 5 Total:</span> <span id="lesson5Total">0</span> / 40</div>
-    <div><span class="label">Lesson 6 Total:</span> <span id="lesson6Total">0</span> / 15</div>
-    <div><span class="label">Lesson 3 Total:</span> <span id="lesson3Total">0</span> / 16</div>
-  </div>
-
-  <script>
-    let allButtons = [];
-
-    function applyColor(btn, value) {
-      btn.style.backgroundColor = value === 1 ? "lightgreen" : value === 0.5 ? "khaki" : "white";
-    }
-
-    function createButtons(section, count, options, labelPrefix = "Button") {
-      const div = document.createElement('div');
-      div.className = 'button-set';
-      const values = Array(count).fill(0);
-
-      for (let i = 0; i < count; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'btn';
-        btn.innerText = `${labelPrefix} ${i + 1}: 0`;
-        btn.dataset.index = i;
-        btn.dataset.options = JSON.stringify(options);
-        btn.dataset.label = labelPrefix;
-        btn.dataset.set = allButtons.length;
-        applyColor(btn, 0);
-        btn.addEventListener('click', () => {
-          const index = parseInt(btn.dataset.index);
-          const opt = JSON.parse(btn.dataset.options);
-          let current = values[index];
-          const idx = opt.indexOf(current);
-          const next = opt[(idx + 1) % opt.length];
-          values[index] = next;
-          btn.innerText = `${labelPrefix} ${index + 1}: ${next}`;
-          applyColor(btn, next);
-          updateTotals();
-        });
-        div.appendChild(btn);
-      }
-
-      section.appendChild(div);
-      allButtons.push({ buttons: div.querySelectorAll('button'), values, options });
-      return values;
-    }
-
-    const container = document.getElementById("container");
-
-    const lesson1 = document.createElement('div');
-    lesson1.className = 'section';
-    lesson1.innerHTML = '<div class="label">Lesson 1</div>';
-    const lesson1Vals = createButtons(lesson1, 6, [0, 0.5, 1]);
-    container.appendChild(lesson1);
-
-    const lesson3 = document.createElement('div');
-    lesson3.className = 'section';
-    lesson3.innerHTML = '<div class="label">Lesson 3 (Initial)</div>';
-    const lesson3Vals = createButtons(lesson3, 4, [0, 0.5, 1]);
-    container.appendChild(lesson3);
-
-    const lesson6_part1 = document.createElement('div');
-    lesson6_part1.className = 'section';
-    lesson6_part1.innerHTML = '<div class="label">Lesson 6 (Initial)</div>';
-    const lesson6Vals1 = createButtons(lesson6_part1, 3, [0, 0.5, 1]);
-    container.appendChild(lesson6_part1);
-
-    const lesson4 = document.createElement('div');
-    lesson4.className = 'section';
-    lesson4.innerHTML = '<div class="label">Lesson 4</div>';
-    const lesson4Vals = [];
-    const l4Btns = document.createElement('div');
-    l4Btns.className = 'button-set';
-    for (let i = 0; i < 8; i++) {
-      const options = i % 2 === 0 ? [0, 1] : [0, 0.5, 1];
-      const btn = document.createElement('button');
-      btn.className = 'btn';
-      btn.innerText = `Button ${i + 1}: 0`;
-      lesson4Vals[i] = 0;
-      btn.dataset.index = i;
-      btn.dataset.label = 'Button';
-      btn.dataset.set = allButtons.length;
-      btn.dataset.options = JSON.stringify(options);
-      applyColor(btn, 0);
-      btn.addEventListener('click', () => {
-        let idx = options.indexOf(lesson4Vals[i]);
-        let next = options[(idx + 1) % options.length];
-        lesson4Vals[i] = next;
-        btn.innerText = `Button ${i + 1}: ${next}`;
-        applyColor(btn, next);
-        updateTotals();
-      });
-      l4Btns.appendChild(btn);
-    }
-    lesson4.appendChild(l4Btns);
-    container.appendChild(lesson4);
-
-    const lesson5 = document.createElement('div');
-    lesson5.className = 'section';
-    lesson5.innerHTML = '<div class="label">Lesson 5</div>';
-    const lesson5Vals = createButtons(lesson5, 12, [0, 0.5, 1]);
-    container.appendChild(lesson5);
-
-    const lesson6 = document.createElement('div');
-    lesson6.className = 'section';
-    lesson6.innerHTML = '<div class="label">Lesson 6 (Full Set)</div>';
-    const lesson6Vals2 = createButtons(lesson6, 16, [0, 0.5, 1]);
-    container.appendChild(lesson6);
-
-    function updateTotals() {
-      const sum = arr => arr.reduce((a, b) => a + b, 0);
-      document.getElementById("lesson1Total").innerText = sum(lesson1Vals);
-      document.getElementById("lesson4Total").innerText = sum(lesson4Vals) * 5;
-      document.getElementById("lesson5Total").innerText = sum(lesson5Vals) * (40 / 12);
-
-      const lesson6Main = lesson6Vals2.map((v, i) => ([0, 1, 12, 13].includes(i) ? 0 : v));
-      const lesson6Total = sum(lesson6Main) + sum(lesson6Vals1);
-      document.getElementById("lesson6Total").innerText = lesson6Total;
-
-      const lesson3Combined = sum(lesson3Vals)
-        + sum(lesson5Vals.slice(8))
-        + sum(lesson6Vals2.slice(0, 4))
-        + sum(lesson6Vals2.slice(12));
-      document.getElementById("lesson3Total").innerText = lesson3Combined;
-    }
-
-    function resetAll() {
-      allButtons.forEach(group => {
-        group.buttons.forEach((btn, i) => {
-          group.values[i] = 0;
-          btn.innerText = `${btn.dataset.label} ${parseInt(btn.dataset.index) + 1}: 0`;
-          applyColor(btn, 0);
-        });
-      });
-      lesson4Vals.fill(0);
-      const l4 = document.querySelectorAll(".section:nth-of-type(4) .btn");
-      l4.forEach((btn, i) => {
-        btn.innerText = `Button ${i + 1}: 0`;
-        applyColor(btn, 0);
-      });
-      updateTotals();
-    }
-
-    function exportScores() {
-      const results = {
-        Lesson1: lesson1Vals,
-        Lesson3: lesson3Vals,
-        Lesson3_Extra: lesson5Vals.slice(8).concat(lesson6Vals2.slice(0,4), lesson6Vals2.slice(12)),
-        Lesson4: lesson4Vals,
-        Lesson5: lesson5Vals,
-        Lesson6_Initial: lesson6Vals1,
-        Lesson6_Full: lesson6Vals2
-      };
-      const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'grading_scores.json';
-      a.click();
-    }
-  </script>
-</body>
-</html>
+ <html lang="en">
+ <head>
+   <meta charset="UTF-8">
+   <title>Lesson Grading Buttons</title>
+   <style>
+     .section { margin-bottom: 30px; }
+     .button-set { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+     .btn { padding: 5px 15px; cursor: pointer; border: 1px solid #aaa; border-radius: 5px; }
+     .label { font-weight: bold; }
+     .controls { margin-top: 20px; }
+   </style>
+ </head>
+ <body>
+ 
+   <div id="container"></div>
+ 
+   <div class="controls">
+     <button onclick="resetAll()">Reset All</button>
+     <button onclick="exportScores()">Export Scores</button>
+   </div>
+ 
+   <div style="margin-top:30px">
+     <div><span class="label">Lesson 1 Total:</span> <span id="lesson1Total">0</span> / 6</div>
+     <div><span class="label">Lesson 4 Total:</span> <span id="lesson4Total">0</span> / 40</div>
+     <div><span class="label">Lesson 5 Total:</span> <span id="lesson5Total">0</span> / 40</div>
+     <div><span class="label">Lesson 6 Total:</span> <span id="lesson6Total">0</span> / 15</div>
+     <div><span class="label">Lesson 3 Total:</span> <span id="lesson3Total">0</span> / 16</div>
+   </div>
+ 
+   <script>
+     let allButtons = [];
+ 
+     function createButtons(section, count, options, labelPrefix = "Button") {
+       const div = document.createElement('div');
+       div.className = 'button-set';
+       const values = Array(count).fill(0);
+ 
+       for (let i = 0; i < count; i++) {
+         const btn = document.createElement('button');
+         btn.className = 'btn';
+         btn.innerText = `${labelPrefix} ${i + 1}: 0`;
+         btn.dataset.index = i;
+         btn.dataset.options = JSON.stringify(options);
+         btn.dataset.label = labelPrefix;
+         btn.dataset.set = allButtons.length;
+         btn.addEventListener('click', () => {
+           const index = parseInt(btn.dataset.index);
+           const opt = JSON.parse(btn.dataset.options);
+           let current = values[index];
+           const idx = opt.indexOf(current);
+           const next = opt[(idx + 1) % opt.length];
+           values[index] = next;
+           btn.innerText = `${labelPrefix} ${index + 1}: ${next}`;
+           updateTotals();
+         });
+         div.appendChild(btn);
+       }
+ 
+       section.appendChild(div);
+       allButtons.push({ buttons: div.querySelectorAll('button'), values, options });
+       return values;
+     }
+ 
+     const container = document.getElementById("container");
+ 
+     const lesson1 = document.createElement('div');
+     lesson1.className = 'section';
+     lesson1.innerHTML = '<div class="label">Lesson 1</div>';
+     const lesson1Vals = createButtons(lesson1, 6, [0, 0.5, 1]);
+     container.appendChild(lesson1);
+ 
+     const lesson3 = document.createElement('div');
+     lesson3.className = 'section';
+     lesson3.innerHTML = '<div class="label">Lesson 3 (Initial)</div>';
+     const lesson3Vals = createButtons(lesson3, 4, [0, 0.5, 1]);
+     container.appendChild(lesson3);
+ 
+     const lesson6_part1 = document.createElement('div');
+     lesson6_part1.className = 'section';
+     lesson6_part1.innerHTML = '<div class="label">Lesson 6 (Initial)</div>';
+     const lesson6Vals1 = createButtons(lesson6_part1, 3, [0, 0.5, 1]);
+     container.appendChild(lesson6_part1);
+ 
+     const lesson4 = document.createElement('div');
+     lesson4.className = 'section';
+     lesson4.innerHTML = '<div class="label">Lesson 4</div>';
+     const lesson4Vals = [];
+     const l4Btns = document.createElement('div');
+     l4Btns.className = 'button-set';
+     for (let i = 0; i < 8; i++) {
+       const options = i % 2 === 0 ? [0, 1] : [0, 0.5, 1];
+       const btn = document.createElement('button');
+       btn.className = 'btn';
+       btn.innerText = `Button ${i + 1}: 0`;
+       lesson4Vals[i] = 0;
+       btn.dataset.index = i;
+       btn.dataset.label = 'Button';
+       btn.dataset.set = allButtons.length;
+       btn.dataset.options = JSON.stringify(options);
+       btn.addEventListener('click', () => {
+         let idx = options.indexOf(lesson4Vals[i]);
+         let next = options[(idx + 1) % options.length];
+         lesson4Vals[i] = next;
+         btn.innerText = `Button ${i + 1}: ${next}`;
+         updateTotals();
+       });
+       l4Btns.appendChild(btn);
+     }
+     lesson4.appendChild(l4Btns);
+     container.appendChild(lesson4);
+ 
+     const lesson5 = document.createElement('div');
+     lesson5.className = 'section';
+     lesson5.innerHTML = '<div class="label">Lesson 5</div>';
+     const lesson5Vals = createButtons(lesson5, 12, [0, 0.5, 1]);
+     container.appendChild(lesson5);
+ 
+     const lesson6 = document.createElement('div');
+     lesson6.className = 'section';
+     lesson6.innerHTML = '<div class="label">Lesson 6 (Full Set)</div>';
+     const lesson6Vals2 = createButtons(lesson6, 16, [0, 0.5, 1]);
+     container.appendChild(lesson6);
+ 
+     function updateTotals() {
+       const sum = arr => arr.reduce((a, b) => a + b, 0);
+       document.getElementById("lesson1Total").innerText = sum(lesson1Vals);
+       document.getElementById("lesson4Total").innerText = sum(lesson4Vals) * 5;
+       document.getElementById("lesson5Total").innerText = sum(lesson5Vals) * (40 / 12);
+ 
+       const lesson6Main = lesson6Vals2.map((v, i) => ([0, 1, 12, 13].includes(i) ? 0 : v));
+       const lesson6Total = sum(lesson6Main) + sum(lesson6Vals1);
+       document.getElementById("lesson6Total").innerText = lesson6Total;
+ 
+       const lesson3Combined = sum(lesson3Vals)
+         + sum(lesson5Vals.slice(8))
+         + sum(lesson6Vals2.slice(0, 4))
+         + sum(lesson6Vals2.slice(12));
+       document.getElementById("lesson3Total").innerText = lesson3Combined;
+     }
+ 
+     function resetAll() {
+       allButtons.forEach(group => {
+         group.buttons.forEach((btn, i) => {
+           group.values[i] = 0;
+           btn.innerText = `${btn.dataset.label} ${parseInt(btn.dataset.index) + 1}: 0`;
+         });
+       });
+       lesson4Vals.fill(0);
+       const l4 = document.querySelectorAll(".section:nth-of-type(4) .btn");
+       l4.forEach((btn, i) => btn.innerText = `Button ${i + 1}: 0`);
+       updateTotals();
+     }
+ 
+     function exportScores() {
+       const results = {
+         Lesson1: lesson1Vals,
+         Lesson3: lesson3Vals,
+         Lesson3_Extra: lesson5Vals.slice(8).concat(lesson6Vals2.slice(0,4), lesson6Vals2.slice(12)),
+         Lesson4: lesson4Vals,
+         Lesson5: lesson5Vals,
+         Lesson6_Initial: lesson6Vals1,
+         Lesson6_Full: lesson6Vals2
+       };
+       const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+       const a = document.createElement('a');
+       a.href = URL.createObjectURL(blob);
+       a.download = 'grading_scores.json';
+       a.click();
+     }
+   </script>
+ </body>
+ </html>
