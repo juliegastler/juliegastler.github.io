@@ -50,6 +50,11 @@
 
   <div class="totals-row">
     <div><span class="label">Lesson 1 Total:</span> <span id="lesson1Total">0</span> / 6</div>
+    <div><span class="label">Lesson 3 Total:</span> <span id="lesson3Total">0</span> / 16</div>
+    <div><span class="label">Lesson 4 Total:</span> <span id="lesson4Total">0</span> / 40</div>
+    <div><span class="label">Lesson 5 Total:</span> <span id="lesson5Total">0</span> / 40</div>
+    <div><span class="label">Lesson 6 Total:</span> <span id="lesson6Total">0</span> / 15</div>
+  </div>
     <div><span class="label">Lesson 4 Total:</span> <span id="lesson4Total">0</span> / 40</div>
     <div><span class="label">Lesson 5 Total:</span> <span id="lesson5Total">0</span> / 40</div>
     <div><span class="label">Lesson 6 Total:</span> <span id="lesson6Total">0</span> / 15</div>
@@ -158,10 +163,42 @@
     container.appendChild(lesson5);
 
     const lesson6Labels2 = ["p=mv", "4*2.5", "10", "kgm/s", "0", "kgm/s", "10", "kgm/s", "10", "kgm/s", "6", "kg", "v=p/m", "10/6", "1.67", "m/s"];
-    const lesson6 = document.createElement('div');
-    lesson6.className = 'section';
-    lesson6.innerHTML = '<div class="label">Lesson 6 (Full Set)</div>';
-    const lesson6Vals2 = createButtons(lesson6, 16, [0, 0.5, 1], lesson6Labels2);
+const lesson6 = document.createElement('div');
+lesson6.className = 'section';
+lesson6.innerHTML = '<div class="label">Lesson 6 (Full Set)</div>';
+
+const lesson6Row1 = document.createElement('div');
+lesson6Row1.className = 'button-set';
+const lesson6Row2 = document.createElement('div');
+lesson6Row2.className = 'button-set';
+const lesson6Vals2 = [];
+
+for (let i = 0; i < 16; i++) {
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.innerText = lesson6Labels2[i];
+  lesson6Vals2[i] = 0;
+  btn.dataset.index = i;
+  btn.dataset.label = lesson6Labels2[i];
+  btn.dataset.set = allButtons.length;
+  btn.dataset.options = JSON.stringify([0, 0.5, 1]);
+  applyColor(btn, 0);
+  btn.addEventListener('click', () => {
+    const options = [0, 0.5, 1];
+    let idx = options.indexOf(lesson6Vals2[i]);
+    let next = options[(idx + 1) % options.length];
+    lesson6Vals2[i] = next;
+    applyColor(btn, next);
+    updateTotals();
+  });
+  if (i < 8) lesson6Row1.appendChild(btn);
+  else lesson6Row2.appendChild(btn);
+}
+
+lesson6.appendChild(lesson6Row1);
+lesson6.appendChild(lesson6Row2);
+allButtons.push({ buttons: [...lesson6Row1.querySelectorAll('button'), ...lesson6Row2.querySelectorAll('button')], values: lesson6Vals2, options: [0, 0.5, 1] });
+container.appendChild(lesson6);
     container.appendChild(lesson6);
 
     function updateTotals() {
