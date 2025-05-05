@@ -12,11 +12,16 @@
       margin-top: 10px;
     }
     .btn {
-      padding: 5px 15px;
+      width: 130px;
+      height: 40px;
       cursor: pointer;
       border: 1px solid #aaa;
       border-radius: 5px;
       background-color: #d9d9d9;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .label { font-weight: bold; }
     .controls { margin-top: 20px; }
@@ -63,7 +68,7 @@
       for (let i = 0; i < count; i++) {
         const btn = document.createElement('button');
         btn.className = 'btn';
-        btn.innerText = `${labels[i]}: 0`;
+        btn.innerText = `${labels[i]}`;
         btn.dataset.index = i;
         btn.dataset.options = JSON.stringify(options);
         btn.dataset.label = labels[i];
@@ -76,7 +81,6 @@
           const idx = opt.indexOf(current);
           const next = opt[(idx + 1) % opt.length];
           values[index] = next;
-          btn.innerText = `${labels[index]}: ${next}`;
           applyColor(btn, next);
           updateTotals();
         });
@@ -122,7 +126,7 @@
       const options = i % 2 === 0 ? [0, 1] : [0, 0.5, 1];
       const btn = document.createElement('button');
       btn.className = 'btn';
-      btn.innerText = `${lesson4Labels[i]}: 0`;
+      btn.innerText = `${lesson4Labels[i]}`;
       lesson4Vals[i] = 0;
       btn.dataset.index = i;
       btn.dataset.label = lesson4Labels[i];
@@ -133,7 +137,6 @@
         let idx = options.indexOf(lesson4Vals[i]);
         let next = options[(idx + 1) % options.length];
         lesson4Vals[i] = next;
-        btn.innerText = `${lesson4Labels[i]}: ${next}`;
         applyColor(btn, next);
         updateTotals();
       });
@@ -177,14 +180,14 @@
       allButtons.forEach(group => {
         group.buttons.forEach((btn, i) => {
           group.values[i] = 0;
-          btn.innerText = `${btn.dataset.label}: 0`;
+          btn.innerText = `${btn.dataset.label}`;
           applyColor(btn, 0);
         });
       });
       lesson4Vals.fill(0);
       const l4 = document.querySelectorAll(".section:nth-of-type(4) .btn");
       l4.forEach((btn, i) => {
-        btn.innerText = `${lesson4Labels[i]}: 0`;
+        btn.innerText = `${lesson4Labels[i]}`;
         applyColor(btn, 0);
       });
       updateTotals();
