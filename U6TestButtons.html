@@ -55,7 +55,11 @@
     <div><span class="label">Lesson 5 Total:</span> <span id="lesson5Total">0</span> / 40</div>
     <div><span class="label">Lesson 6 Total:</span> <span id="lesson6Total">0</span> / 15</div>
   </div>
-
+    <div><span class="label">Lesson 4 Total:</span> <span id="lesson4Total">0</span> / 40</div>
+    <div><span class="label">Lesson 5 Total:</span> <span id="lesson5Total">0</span> / 40</div>
+    <div><span class="label">Lesson 6 Total:</span> <span id="lesson6Total">0</span> / 15</div>
+    <div><span class="label">Lesson 3 Total:</span> <span id="lesson3Total">0</span> / 16</div>
+  </div>
 
   <script>
     let allButtons = [];
@@ -198,20 +202,21 @@ container.appendChild(lesson6);
     container.appendChild(lesson6);
 
     function updateTotals() {
+      const formatNumber = x => Number.isInteger(x) ? x : x.toFixed(1);
       const sum = arr => arr.reduce((a, b) => a + b, 0);
-      document.getElementById("lesson1Total").innerText = sum(lesson1Vals);
-      document.getElementById("lesson4Total").innerText = sum(lesson4Vals) * 5;
-      document.getElementById("lesson5Total").innerText = sum(lesson5Vals) * (40 / 12);
+      document.getElementById("lesson1Total").innerText = formatNumber(sum(lesson1Vals));
+      document.getElementById("lesson4Total").innerText = formatNumber(sum(lesson4Vals) * 5);
+      document.getElementById("lesson5Total").innerText = formatNumber(sum(lesson5Vals) * (40 / 12));
 
       const lesson6Main = lesson6Vals2.map((v, i) => ([0, 1, 12, 13].includes(i) ? 0 : v));
       const lesson6Total = sum(lesson6Main) + sum(lesson6Vals1);
-      document.getElementById("lesson6Total").innerText = lesson6Total;
+      document.getElementById("lesson6Total").innerText = formatNumber(lesson6Total);
 
       const lesson3Combined = sum(lesson3Vals)
         + sum(lesson5Vals.slice(8))
         + sum(lesson6Vals2.slice(0, 4))
         + sum(lesson6Vals2.slice(12));
-      document.getElementById("lesson3Total").innerText = lesson3Combined;
+      document.getElementById("lesson3Total").innerText = formatNumber(lesson3Combined);
     }
 
     function resetAll() {
