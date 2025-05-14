@@ -29,6 +29,9 @@
 </head>
 <body>
   <div id="container"></div>
+<div style="text-align: center; margin-top: 10px;">
+  <button onclick="resetAll()">Reset All</button>
+</div>
 
   <script>
     const container = document.getElementById("container");
@@ -80,10 +83,19 @@
     lesson5.appendChild(createButtonRow(["λ = v/f", "350/440", ".79", "m", "v=fλ", "0.25x12", "3", "m/s"], [0, 0.5, 1], lesson5Vals));
     lesson5.appendChild(createButtonRow(["f = v/λ", "80/50", "1.6", "Hz"], [0, 0.5, 1], lesson5Vals));
     container.appendChild(lesson5);
+  
+    function resetAll() {
+      const allButtons = document.querySelectorAll('.btn');
+      allButtons.forEach(btn => {
+        btn.style.backgroundColor = '#d9d9d9';
+      });
+      for (const arr of lesson2Vals) arr.fill(0);
+      for (const arr of lesson5Vals) arr.fill(0);
+    }
   </script>
 <div style="margin-top: 30px; padding: 15px; border: 2px solid black; display: flex; justify-content: space-around; font-size: 18px;">
-    <div><span class="label">Lesson 2 Total:</span> <span id="lesson2Total">0</span> / 2</div>
-    <div><span class="label">Lesson 5 Total:</span> <span id="lesson5Total">0</span> / 20</div>
+    <div><span class="label">Lesson 2 Total:</span> <span id="lesson2Total" style="font-weight:bold;">0</span> / 2</div>
+    <div><span class="label">Lesson 5 Total:</span> <span id="lesson5Total" style="font-weight:bold;">0</span> / 20</div>
   </div>
 
   <script>
