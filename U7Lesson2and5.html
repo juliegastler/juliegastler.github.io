@@ -81,5 +81,25 @@
     lesson5.appendChild(createButtonRow(["f = v/λ", "80/50", "1.6", "Hz"], [0, 0.5, 1], lesson5Vals));
     container.appendChild(lesson5);
   </script>
+<div style="margin-top: 30px; padding: 15px; border: 2px solid black; display: flex; justify-content: space-around; font-size: 18px;">
+    <div><span class="label">Lesson 2 Total:</span> <span id="lesson2Total">0</span> / 2</div>
+    <div><span class="label">Lesson 5 Total:</span> <span id="lesson5Total">0</span> / 20</div>
+  </div>
+
+  <script>
+    function sumNested(arrays) {
+      return arrays.flat().reduce((a, b) => a + b, 0);
+    }
+
+    function updateTotals() {
+      const lesson2Total = sumNested(lesson2Vals);
+      const lesson5Total = sumNested(lesson5Vals);
+
+      document.getElementById("lesson2Total").innerText = Number.isInteger(lesson2Total) ? lesson2Total : lesson2Total.toFixed(1);
+      document.getElementById("lesson5Total").innerText = Number.isInteger(lesson5Total) ? lesson5Total : lesson5Total.toFixed(1);
+    }
+
+    setInterval(updateTotals, 200);
+  </script>
 </body>
 </html>
