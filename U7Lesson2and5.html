@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lesson 2 and 5 Grading Buttons</title>
+  <style>
+    .section { margin-bottom: 30px; }
+    .button-set {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .btn {
+      width: 100px;
+      height: 30px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+      background-color: #d9d9d9;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+
+  <script>
+    const container = document.getElementById("container");
+
+    function applyColor(btn, value) {
+      if (value === 0) btn.style.backgroundColor = '#d9d9d9';
+      else if (value === 0.5) btn.style.backgroundColor = '#fff2b3';
+      else if (value === 1) btn.style.backgroundColor = '#c4e3cb';
+    }
+
+    function createButtonRow(labels, options, valuesList) {
+      const row = document.createElement('div');
+      row.className = 'button-set';
+      const values = [];
+      labels.forEach((label, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.innerText = label;
+        values[i] = 0;
+        applyColor(btn, 0);
+        btn.addEventListener('click', () => {
+          const idx = options.indexOf(values[i]);
+          const next = options[(idx + 1) % options.length];
+          values[i] = next;
+          applyColor(btn, next);
+        });
+        row.appendChild(btn);
+      });
+      valuesList.push(values);
+      return row;
+    }
+
+    // Lesson 2
+    const lesson2 = document.createElement('div');
+    lesson2.className = 'section';
+    lesson2.innerHTML = '<div class="label">Lesson 2</div>';
+    const lesson2Vals = [];
+    lesson2.appendChild(createButtonRow(["15", "cm", "30", "cm"], [0, 0.5], lesson2Vals));
+    container.appendChild(lesson2);
+
+    // Lesson 5
+    const lesson5 = document.createElement('div');
+    lesson5.className = 'section';
+    lesson5.innerHTML = '<div class="label">Lesson 5</div>';
+    const lesson5Vals = [];
+
+    lesson5.appendChild(createButtonRow(["T = 1/f", "1/5", ".2", "s"], [0, 0.5, 1], lesson5Vals));
+    lesson5.appendChild(createButtonRow(["v=λ/T or λf", ".3 or 30 x.2 or /5", ".06 or 6", "cm/s or m/s"], [0, 0.5, 1], lesson5Vals));
+    lesson5.appendChild(createButtonRow(["λ = v/f", "350/440", ".79", "m", "v=fλ", "0.25x12", "3", "m/s"], [0, 0.5, 1], lesson5Vals));
+    lesson5.appendChild(createButtonRow(["f = v/λ", "80/50", "1.6", "Hz"], [0, 0.5, 1], lesson5Vals));
+    container.appendChild(lesson5);
+  </script>
+</body>
+</html>
