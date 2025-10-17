@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AP Physics Test Curve Simulator</title>
+<style>
+  :root { --border:#222; --accent:#111; }
+  body { font-family: "Georgia", serif; line-height: 1.4; margin: 24px; color:#111; }
+  h1 { font-weight: 700; margin: 0 0 18px; }
+  .lead { font-size: 1.05rem; }
+  .muted { opacity: .85; }
+  table { border-collapse: collapse; width: 100%; max-width: 1000px; margin: 18px 0; }
+  th, td { border: 2px solid var(--border); padding: 10px 12px; font-size: 1.1rem; }
+  th { text-align: left; background: #fafafa; }
+  input[type="number"] { width: 100%; padding: 6px 8px; font-size: 1.05rem; box-sizing: border-box; }
+  .row { margin: 14px 0; }
+  button { font-family: inherit; font-size: 1.05rem; padding: 10px 16px; border-radius: 8px; border: 2px solid var(--accent); background: white; cursor: pointer; }
+  button:hover { background:#f3f3f3; }
+  .out { font-size: 1.15rem; margin-top: 16px; }
+  .out b { display: inline-block; min-width: 180px; }
+  .note { font-size: .98rem; margin-top: 24px; }
+</style>
+</head>
+<body>
+  <h1>AP Physics Test Curve Simulator</h1>
+
+  <p class="lead">
+    <b>Directions:</b> Enter the points possible and your earned points for MCQ and FRQ below. Click
+    <i>Calculate</i> to see the curved score and predicted AP score.
+  </p>
+  <p class="lead muted">
+    <b>Caution:</b> This calculator mirrors the curve used in class and has been accurate historically, but it does
+    not guarantee any AP score.
+  </p>
+
+  <table aria-label="Score entry table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>MCQ Points Possible</th>
+        <th>Your MCQ Score</th>
+        <th>FRQ Points Possible</th>
+        <th>Your FRQ Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">Inputs</th>
+        <td><input id="mcqPossible" type="number" min="0" step="1" placeholder="e.g., 12" /></td>
+        <td><input id="mcqEarned"   type="number" min="0" step="0.5" placeholder="e.g., 9" /></td>
+        <td><input id="frqPossible" type="number" min="0" step="1" placeholder="e.g., 12" /></td>
+        <td><input id="frqEarned"   type="number" min="0" step="0.5" placeholder="e.g., 8" /></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="row">
+    <button id="calc">Calculate</button>
+  </div>
+
+  <div class="out" id="outputs" aria-live="polite">
+    <div><b>Curved Score:</b> <span id="curvedOut">—</span></div>
+    <div><b>Predicted AP Score:</b> <span id="apOut">—</span></div>
+  </div>
+
+  <p class="note muted">
+    Notes: Raw % is computed as \((\text{MCQ}+\text{FRQ})/(\text{MCQ possible}+\text{FRQ possible})\times 100\).
+    The curve is piecewise-linear: 0→35→50→66.25→81.25→100 maps to 40→65→75→85→95→100.
+    AP score cutoffs use curved %: &lt;65→1, 65–&lt;75→2, 75–&lt;85→3, 85–&lt;95→4, ≥95→5.
+  </p>
+
+<script>
+(function(){
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+  // Piecewise curve matching your spreadsheet
+  function curvedPercent(rawPct){
+    let x = clamp(rawPct, 0, 100);
+    if (x < 35)      return 40 + (65 - 40) * (x - 0)     / (35 - 0);
+    else if (x < 50) return 65 + (75 - 65) * (x - 35)    / (50 - 35);
+    else if (x < 66.25) return 75 + (85 - 75) * (x - 50) / (66.25 - 50);
+    else if (x < 81.25) return 85 + (95 - 85) * (x - 66.25) / (81.25 - 66.25);
+    else               return 95 + (100 - 95) * (x - 81.25) / (100 - 81.25);
+  }
+
+  function apFromCurved(c){
+    if (c < 65) return 1;
+    if (c < 75) return 2;
+    if (c < 85) return 3;
+    if (c < 95) return 4;
+    return 5;
+  }
+
+  function calc(){
+    const mcqP = Number(document.getElementById('mcqPossible').value);
+    const mcqE = Number(document.getElementById('mcqEarned').value);
+    const frqP = Number(document.getElementById('frqPossible').value);
+    const frqE = Number(document.getElementById('frqEarned').value);
+
+    const totalPossible = (isNaN(mcqP)?0:mcqP) + (isNaN(frqP)?0:frqP);
+    const totalEarned   = (isNaN(mcqE)?0:mcqE) + (isNaN(frqE)?0:frqE);
+
+    const curvedSpan = document.getElementById('curvedOut');
+    const apSpan     = document.getElementById('apOut');
+
+    if (totalPossible <= 0) {
+      curvedSpan.textContent = '—';
+      apSpan.textContent = '—';
+      return;
+    }
+
+    const rawPct = 100 * totalEarned / totalPossible;
+    const curved = Math.round(curvedPercent(rawPct) * 100) / 100; // 2 d.p.
+
+    const ap = apFromCurved(curved);
+
+    curvedSpan.textContent = `${curved.toFixed(2)}%`;
+    apSpan.textContent = `${ap}`;
+  }
+
+  document.getElementById('calc').addEventListener('click', calc);
+
+  // Optional: recalc on Enter
+  document.querySelectorAll('input').forEach(el=>{
+    el.addEventListener('keydown', e=>{ if(e.key==='Enter'){ calc(); } });
+  });
+})();
+</script>
+</body>
+</html>
