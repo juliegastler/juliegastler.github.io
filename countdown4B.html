@@ -20,13 +20,13 @@
 
 		document.body.appendChild(canvas);
 
-		const duedate = new Date('May 23, 2023 13:30:00');
+		const duedate = new Date('November 19, 2025 14:32:00');
 
 		setInterval(function(){
 
 			var currentdate = new Date();
 			
-			c.fillStyle = 'gold';
+			c.fillStyle = 'purple';
 			c.fillRect(0,0,canvas.width,canvas.height);
 
 			d = duedate.getTime()-currentdate.getTime();
@@ -59,7 +59,7 @@
 
 			c.font = "60px Comic Sans MS";
 			c.textAlign = "center";
-			c.fillStyle = "purple";
+			c.fillStyle = "gold";
 			c.fillText("Go home for", canvas.width/2, 75);
 			c.fillText("the summer in", canvas.width/2, 150);
 			c.fillText(days + " days", canvas.width/2, 240);
@@ -81,3 +81,4 @@
 
 </body>
 </html>
+
