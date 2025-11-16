@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Grading Toggles – Energy Unit</title>
+<style>
+  :root{
+    --bg:#f7f7f8;
+    --ink:#111;
+    --muted:#666;
+    --border:#cfcfd6;
+    --off:#d1d5db;       /* gray */
+    --mid:#fde68a;       /* yellow */
+    --on:#86efac;        /* green */
+    --card:#ffffff;
+  }
+  html,body{height:100%}
+  body{
+    margin:0; font:18px/1.4 "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:var(--ink); background:var(--bg);
+  }
+  .wrap{
+    max-width:1200px; margin:24px auto; padding:0 16px;
+    display:grid; gap:16px;
+    grid-template-columns: 1.2fr 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "q1 right"
+      "q2 right";
+  }
+  .panel{
+    background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:16px 18px;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  .q1{grid-area:q1; min-height:420px}
+  .right{grid-area:right; display:grid; gap:16px; grid-template-rows:auto 1fr}
+  .q2{grid-area:q2}
+  .q34{display:grid; gap:16px; grid-template-columns:1fr 1fr}
+  h2{
+    margin:0 0 10px 0; font-size:24px; letter-spacing:.2px
+  }
+  .items{display:grid; gap:10px}
+  .row{display:flex; align-items:center; justify-content:space-between; gap:12px}
+  .label{flex:1 1 auto}
+  .toggle{
+    flex:0 0 auto; min-width:110px;
+    border:1px solid var(--border); border-radius:28px; cursor:pointer;
+    background:var(--off); color:#000; font-weight:600;
+    padding:8px 12px; text-align:center; user-select:none;
+    transition:transform .06s ease, background .15s ease;
+  }
+  .toggle:active{transform:scale(.98)}
+  .toggle[data-state="0"]{ background:var(--off) }
+  .toggle[data-state="0.5"]{ background:var(--mid) }
+  .toggle[data-state="1"]{ background:var(--on) }
+
+  .footer{
+    display:grid; gap:10px; margin-top:10px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    align-items:center;
+  }
+  .small{color:var(--muted); font-size:.95rem}
+  .scoreline{font-size:1.05rem}
+  .mono{font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+  .btn{
+    border:1px solid var(--border); background:#fff; padding:8px 12px; border-radius:10px; cursor:pointer;
+  }
+  .strong{font-weight:700}
+  .center{display:flex; align-items:center; gap:8px}
+  @media (max-width:900px){
+    .wrap{
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "q1"
+        "right"
+        "q2";
+    }
+    .q1{min-height:unset}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Question 1 -->
+    <section class="panel q1" id="q1">
+      <h2>Question 1 (max 6)</h2>
+      <div class="items">
+        <!-- tri-state -->
+        <div class="row"><div class="label">Ek → 0</div>
+          <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+        <div class="row"><div class="label">Eg → 0</div>
+          <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+        <div class="row"><div class="label">E<sub>elas</sub> 0 →</div>
+          <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+        <div class="row"><div class="label">E<sub>th</sub> →</div>
+          <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+        <!-- bi-state -->
+        <div class="row"><div class="label">E<sub>i</sub> = E<sub>f</sub></div>
+          <div class="toggle" data-values="0,1" data-state="0"></div></div>
+        <div class="row"><div class="label">Closed</div>
+          <div class="toggle" data-values="0,1" data-state="0"></div></div>
+      </div>
+
+      <div class="footer">
+        <div class="small">Raw Q1: <span id="q1-raw" class="mono">0.0</span> / 6</div>
+        <div class="scoreline strong">Scaled Q1 → 84: <span id="q1-scaled" class="mono">0</span></div>
+        <button class="btn" data-reset="q1">Reset Q1</button>
+      </div>
+    </section>
+
+    <!-- Right column (Q3/Q4 + Score panel) -->
+    <section class="right">
+      <div class="q34">
+        <!-- Question 3 -->
+        <section class="panel" id="q3">
+          <h2>Question 3 (max 4)</h2>
+          <div class="items">
+            <div class="row"><div class="label">Eff = E<sub>out</sub>/E<sub>in</sub></div>
+              <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+            <div class="row"><div class="label">5/150</div>
+              <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+            <div class="row"><div class="label">3.3</div>
+              <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+            <div class="row"><div class="label">E<sub>th</sub></div>
+              <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+          </div>
+          <div class="footer">
+            <div class="small">Raw Q3: <span id="q3-raw" class="mono">0.0</span> / 4</div>
+            <button class="btn" data-reset="q3">Reset Q3</button>
+          </div>
+        </section>
+
+        <!-- Question 4 -->
+        <section class="panel" id="q4">
+          <h2>Question 4 (max 4 incl. shared)</h2>
+          <div class="items">
+            <div class="row"><div class="label">P = E/t</div>
+              <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+            <div class="row"><div class="label">1300/90</div>
+              <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+            <div class="row"><div class="label">14.4</div>
+              <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+            <!-- Shared point between Q3 & Q4 -->
+            <div class="row"><div class="label">% and W (shared)</div>
+              <div class="toggle" data-values="0,0.5,1" data-state="0" data-shared="true"></div></div>
+          </div>
+          <div class="footer">
+            <div class="small">Raw Q4 (incl. shared): <span id="q4-raw" class="mono">0.0</span> / 4</div>
+            <button class="btn" data-reset="q4">Reset Q4</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Scores panel -->
+      <section class="panel" id="scores">
+        <h2>Scaled Scores</h2>
+        <div class="items">
+          <div class="row"><div class="label strong">Q1 → out of 84</div>
+            <div class="mono" id="sum-q1">0</div></div>
+          <div class="row"><div class="label strong">Q2 → out of 36</div>
+            <div class="mono" id="sum-q2">0</div></div>
+          <div class="row"><div class="label strong">Q3+Q4 → out of 112</div>
+            <div class="mono" id="sum-q34">0</div></div>
+        </div>
+        <div class="footer">
+          <div class="center small">Q3 raw + Q4 raw (incl. shared): <span id="q34-raw" class="mono">0.0</span> / 8</div>
+          <button class="btn" id="reset-all">Reset All</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- Question 2 -->
+    <section class="panel q2" id="q2">
+      <h2>Question 2 (max 2)</h2>
+      <div class="items">
+        <div class="row"><div class="label">Attempt w/ E</div>
+          <div class="toggle" data-values="0,1" data-state="0"></div></div>
+        <div class="row"><div class="label">Correct</div>
+          <div class="toggle" data-values="0,0.5,1" data-state="0"></div></div>
+      </div>
+      <div class="footer">
+        <div class="small">Raw Q2: <span id="q2-raw" class="mono">0.0</span> / 2</div>
+        <div class="scoreline strong">Scaled Q2 → 36: <span id="q2-scaled" class="mono">0</span></div>
+        <button class="btn" data-reset="q2">Reset Q2</button>
+      </div>
+    </section>
+  </div>
+
+<script>
+(function(){
+  // Utility: cycle a toggle through its data-values
+  function cycleToggle(btn){
+    const values = btn.dataset.values.split(',').map(v=>v.trim());
+    const cur = btn.dataset.state ?? "0";
+    const i = values.indexOf(cur);
+    const next = values[(i+1) % values.length];
+    btn.dataset.state = next;
+    btn.textContent = next; // show numeric state
+  }
+
+  // Attach handlers
+  document.querySelectorAll('.toggle').forEach(btn=>{
+    // init visual
+    if(!btn.dataset.state){ btn.dataset.state = "0"; }
+    btn.textContent = btn.dataset.state;
+    btn.addEventListener('click', ()=>{ cycleToggle(btn); recompute(); });
+  });
+
+  // Reset logic
+  function resetPanel(id){
+    document.querySelectorAll('#'+id+' .toggle').forEach(btn=>{
+      btn.dataset.state = "0"; btn.textContent = "0";
+    });
+    recompute();
+  }
+  document.querySelectorAll('[data-reset]').forEach(b=>{
+    b.addEventListener('click', ()=> resetPanel(b.dataset.reset));
+  });
+  document.getElementById('reset-all').addEventListener('click', ()=>{
+    ['q1','q2','q3','q4'].forEach(resetPanel);
+  });
+
+  // Sum helpers
+  function sumStates(sel){
+    let s = 0;
+    document.querySelectorAll(sel).forEach(btn=>{
+      s += parseFloat(btn.dataset.state || "0");
+    });
+    return s;
+  }
+
+  function recompute(){
+    // Q1 (max 6) → out of 84
+    const q1raw = sumStates('#q1 .toggle');
+    const q1scaled = Math.round((q1raw/6)*84);
+    document.getElementById('q1-raw').textContent = q1raw.toFixed(1);
+    document.getElementById('q1-scaled').textContent = q1scaled;
+    document.getElementById('sum-q1').textContent = q1scaled;
+
+    // Q2 (max 2) → out of 36
+    const q2raw = sumStates('#q2 .toggle');
+    const q2scaled = Math.round((q2raw/2)*36);
+    document.getElementById('q2-raw').textContent = q2raw.toFixed(1);
+    document.getElementById('q2-scaled').textContent = q2scaled;
+    document.getElementById('sum-q2').textContent = q2scaled;
+
+    // Q3 & Q4 share 1 additional point that sits in Q4 block with data-shared
+    const q3raw = sumStates('#q3 .toggle');     // max 4
+    const q4raw = sumStates('#q4 .toggle');     // includes the shared point → max 4
+    const q34raw = q3raw + q4raw;               // max 8
+    const q34scaled = Math.round((q34raw/8)*112);
+
+    document.getElementById('q3-raw').textContent = q3raw.toFixed(1);
+    document.getElementById('q4-raw').textContent = q4raw.toFixed(1);
+    document.getElementById('q34-raw').textContent = q34raw.toFixed(1);
+    document.getElementById('sum-q34').textContent = q34scaled;
+  }
+
+  // First compute
+  recompute();
+})();
+</script>
+</body>
+</html>
