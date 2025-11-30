@@ -226,6 +226,20 @@ const rubricRows = [
   }
 ];
 
+  //  -------- Auto scroll to next row ----------
+function scrollToNextRow(currentTd) {
+  const currentRow = currentTd.parentElement;
+  const nextRow = currentRow.nextElementSibling;
+
+  if (!nextRow) return; // no next row (end of table)
+
+  // Smooth scroll so next row is nicely visible
+  nextRow.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+}
+  
 // --------- BUILD TABLE ----------
 const tbody = document.querySelector("#rubric-table tbody");
 const selectedByRow = new Array(rubricRows.length).fill(0);
@@ -255,18 +269,20 @@ rubricRows.forEach((row, rowIndex) => {
 function toggleCell(td) {
   const rowIndex = parseInt(td.dataset.rowIndex, 10);
   const points = parseFloat(td.dataset.points);
-
   const alreadySelected = td.classList.contains("selected");
 
-  // clear existing selection in this row
+  // Clear existing selection in this row
   const rowTds = td.parentElement.querySelectorAll("td.option-cell");
   rowTds.forEach(cell => cell.classList.remove("selected"));
   selectedByRow[rowIndex] = 0;
 
-  // if it wasn't selected before, select it now
+  // If it wasn't selected before, select it now
   if (!alreadySelected) {
     td.classList.add("selected");
     selectedByRow[rowIndex] = points;
+
+    // ------- NEW: auto-scroll to next row -------
+    scrollToNextRow(td);
   }
 
   updateTotal();
