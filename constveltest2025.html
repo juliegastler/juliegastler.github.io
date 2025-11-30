@@ -81,78 +81,6 @@
 // --------- DATA ----------
 const rubricRows = [
   {
-    criteria: "Question 1<br>Part A and Units",
-    options: [
-      { points: 72, desc: "Work<br>Answer<br>Units on both" },
-      { points: 60, desc: "Work<br>Answer" },
-      { points: 48, desc: "2 present" },
-      { points: 36, desc: "1.5 presentq" },
-      { points: 24, desc: "1 present" },
-      { points: 12, desc: "0.5 present" },
-      { points: 0,  desc: "insufficient evidence." }
-    ]
-  },
-  {
-    criteria: "Question 1<br>Part B",
-    options: [
-      { points: 72, desc: "Work<br>Answer<br>Direction" },
-      { points: 60, desc: "Work<br>Answer" },
-      { points: 48, desc: "2 present" },
-      { points: 36, desc: "1.5 presentq" },
-      { points: 24, desc: "1 present" },
-      { points: 12, desc: "0.5 present" },
-      { points: 0,  desc: "insufficient evidence." }
-    ]
-  },
-  {
-    criteria: "Question 2<br>Graph part 1",
-    options: [
-      { points: 24, desc: "goes down<br>flat<br>goes up" },
-      { points: 20, desc: "2.5 present" },
-      { points: 16, desc: "2 present" },
-      { points: 12, desc: "1.5 presentq" },
-      { points: 8,  desc: "1 present" },
-      { points: 4,  desc: "0.5 present" },
-      { points: 0,  desc: "insufficient evidence." }
-    ]
-  },
-  {
-    criteria: "Question 2<br>Graph part 2",
-    options: [
-      { points: 24, desc: "slow then fast<br>starts and ends at school<br>straight lines" },
-      { points: 20, desc: "2.5 present" },
-      { points: 16, desc: "2 present" },
-      { points: 12, desc: "1.5 presentq" },
-      { points: 8,  desc: "1 present" },
-      { points: 4,  desc: "0.5 present" },
-      { points: 0,  desc: "insufficient evidence." }
-    ]
-  },
-  {
-    criteria: "Question 2<br>Motion Diagram part 1",
-    options: [
-      { points: 54, desc: "left<br>stop<br>right" },
-      { points: 45, desc: "2.5 present" },
-      { points: 36, desc: "2 present" },
-      { points: 27, desc: "1.5 presentq" },
-      { points: 18, desc: "1 present" },
-      { points: 9,  desc: "0.5 present" },
-      { points: 0,  desc: "insufficient evidence." }
-    ]
-  },
-  {
-    criteria: "Question 2<br>Motion Diagram part 2",
-    options: [
-      { points: 54, desc: "short then long<br>starts and ends at school<br>same length arrows" },
-      { points: 45, desc: "2.5 present" },
-      { points: 36, desc: "2 present" },
-      { points: 27, desc: "1.5 presentq" },
-      { points: 18, desc: "1 present" },
-      { points: 9,  desc: "0.5 present" },
-      { points: 0,  desc: "insufficient evidence." }
-    ]
-  },
-  {
     criteria: "Question 3<br>Find change in position<br>Or commensurate with conversion",
     options: [
       { points: 27, desc: "delta x = vt<br>790×2.25 &nbsp;&nbsp;(790×135)<br>1777.5 &nbsp;&nbsp;(106650)" },
@@ -221,6 +149,78 @@ const rubricRows = [
       { points: 36, desc: "1.5 presentq" },
       { points: 24, desc: "1 present" },
       { points: 12, desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 1<br>Part A and Units",
+    options: [
+      { points: 72, desc: "Work<br>Answer<br>Units on both" },
+      { points: 60, desc: "Work<br>Answer" },
+      { points: 48, desc: "2 present" },
+      { points: 36, desc: "1.5 presentq" },
+      { points: 24, desc: "1 present" },
+      { points: 12, desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 1<br>Part B",
+    options: [
+      { points: 72, desc: "Work<br>Answer<br>Direction" },
+      { points: 60, desc: "Work<br>Answer" },
+      { points: 48, desc: "2 present" },
+      { points: 36, desc: "1.5 presentq" },
+      { points: 24, desc: "1 present" },
+      { points: 12, desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 2<br>Graph part 1",
+    options: [
+      { points: 24, desc: "goes down<br>flat<br>goes up" },
+      { points: 20, desc: "2.5 present" },
+      { points: 16, desc: "2 present" },
+      { points: 12, desc: "1.5 presentq" },
+      { points: 8,  desc: "1 present" },
+      { points: 4,  desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 2<br>Graph part 2",
+    options: [
+      { points: 24, desc: "slow then fast<br>starts and ends at school<br>straight lines" },
+      { points: 20, desc: "2.5 present" },
+      { points: 16, desc: "2 present" },
+      { points: 12, desc: "1.5 presentq" },
+      { points: 8,  desc: "1 present" },
+      { points: 4,  desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 2<br>Motion Diagram part 1",
+    options: [
+      { points: 54, desc: "left<br>stop<br>right" },
+      { points: 45, desc: "2.5 present" },
+      { points: 36, desc: "2 present" },
+      { points: 27, desc: "1.5 presentq" },
+      { points: 18, desc: "1 present" },
+      { points: 9,  desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 2<br>Motion Diagram part 2",
+    options: [
+      { points: 54, desc: "short then long<br>starts and ends at school<br>same length arrows" },
+      { points: 45, desc: "2.5 present" },
+      { points: 36, desc: "2 present" },
+      { points: 27, desc: "1.5 presentq" },
+      { points: 18, desc: "1 present" },
+      { points: 9,  desc: "0.5 present" },
       { points: 0,  desc: "insufficient evidence." }
     ]
   }
