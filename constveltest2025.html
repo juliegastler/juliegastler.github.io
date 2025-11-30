@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Motion Graph Rubric Grid</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 10px;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 1200px;
+    font-size: 12px;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 4px 6px;
+    vertical-align: top;
+    text-align: left;
+  }
+  th.criteria-col {
+    width: 170px;
+  }
+  td.option-cell {
+    cursor: pointer;
+  }
+  td.option-cell.selected {
+    background: #cce5ff;
+    outline: 2px solid #003f7f;
+  }
+  .points {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 2px;
+  }
+  #total-container {
+    margin-top: 12px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Grading Grid</h2>
+<p>Click one box in each row to assign points. Click again to clear.</p>
+
+<table id="rubric-table">
+  <thead>
+    <tr>
+      <th class="criteria-col">Criteria</th>
+      <th>Level 1</th>
+      <th>Level 2</th>
+      <th>Level 3</th>
+      <th>Level 4</th>
+      <th>Level 5</th>
+      <th>Level 6</th>
+      <th>Level 7</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- rows will be filled by JavaScript -->
+  </tbody>
+</table>
+
+<div id="total-container">
+  TOTAL POINTS: <span id="total-points">0</span>
+</div>
+
+<script>
+// --------- DATA: one row per criterion ----------
+const rubricRows = [
+  {
+    criteria: "Question 1<br>Part A and Units",
+    options: [
+      { points: 72, desc: "Work<br>Answer<br>Units on both" },
+      { points: 60, desc: "Work<br>Answer" },
+      { points: 48, desc: "2 present" },
+      { points: 36, desc: "1.5 presentq" },
+      { points: 24, desc: "1 present" },
+      { points: 12, desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 1<br>Part B",
+    options: [
+      { points: 72, desc: "Work<br>Answer<br>Direction" },
+      { points: 60, desc: "Work<br>Answer" },
+      { points: 48, desc: "2 present" },
+      { points: 36, desc: "1.5 presentq" },
+      { points: 24, desc: "1 present" },
+      { points: 12, desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 2<br>Graph part 1",
+    options: [
+      { points: 24, desc: "goes down<br>flat<br>goes up" },
+      { points: 20, desc: "2.5 present" },
+      { points: 16, desc: "2 present" },
+      { points: 12, desc: "1.5 presentq" },
+      { points: 8,  desc: "1 present" },
+      { points: 4,  desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 2<br>Graph part 2",
+    options: [
+      { points: 24, desc: "slow then fast<br>starts and ends at school<br>straight lines" },
+      { points: 20, desc: "2.5 present" },
+      { points: 16, desc: "2 present" },
+      { points: 12, desc: "1.5 presentq" },
+      { points: 8,  desc: "1 present" },
+      { points: 4,  desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 2<br>Motion Diagram part 1",
+    options: [
+      { points: 54, desc: "left<br>stop<br>right" },
+      { points: 45, desc: "2.5 present" },
+      { points: 36, desc: "2 present" },
+      { points: 27, desc: "1.5 presentq" },
+      { points: 18, desc: "1 present" },
+      { points: 9,  desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 2<br>Motion Diagram part 2",
+    options: [
+      { points: 54, desc: "short then long<br>starts and ends at school<br>same length arrows" },
+      { points: 45, desc: "2.5 present" },
+      { points: 36, desc: "2 present" },
+      { points: 27, desc: "1.5 presentq" },
+      { points: 18, desc: "1 present" },
+      { points: 9,  desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 3<br>Find change in position<br>Or commensurate with conversion",
+    options: [
+      { points: 27, desc: "delta x = vt<br>790×2.25 &nbsp;&nbsp;(790×135)<br>1777.5 &nbsp;&nbsp;(106650)" },
+      { points: 22.5, desc: "2.5 present" },
+      { points: 18,   desc: "2 present" },
+      { points: 13.5, desc: "1.5 presentq" },
+      { points: 9,    desc: "1 present" },
+      { points: 4.5,  desc: "0.5 present" },
+      { points: 0,    desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 4<br>Find velocity<br>or commensurate with conversion",
+    options: [
+      { points: 27, desc: "v = Δx / t<br>400/129 &nbsp;&nbsp;(400/2.15)<br>3.1 &nbsp;&nbsp;(186.04)" },
+      { points: 22.5, desc: "2.5 present" },
+      { points: 18,   desc: "2 present" },
+      { points: 13.5, desc: "1.5 presentq" },
+      { points: 9,    desc: "1 present" },
+      { points: 4.5,  desc: "0.5 present" },
+      { points: 0,    desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 5<br>Determine v and units and conversions",
+    options: [
+      { points: 27, desc: "0<br>it's not moving<br>Units and conversions" },
+      { points: 22.5, desc: "2.5 present" },
+      { points: 18,   desc: "2 present" },
+      { points: 13.5, desc: "1.5 presentq" },
+      { points: 9,    desc: "1 present" },
+      { points: 4.5,  desc: "0.5 present" },
+      { points: 0,    desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 6<br>find xf",
+    options: [
+      { points: 27, desc: "xf = vt + xi<br>60×0.25 + 12<br>27" },
+      { points: 22.5, desc: "2.5 present" },
+      { points: 18,   desc: "2 present" },
+      { points: 13.5, desc: "1.5 presentq" },
+      { points: 9,    desc: "1 present" },
+      { points: 4.5,  desc: "0.5 present" },
+      { points: 0,    desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 7<br>Slope Part A<br>slope or rise/run",
+    options: [
+      { points: 72, desc: "something on the graph<br>slope tells velocity<br>cm/s" },
+      { points: 60, desc: "2.5 present" },
+      { points: 48, desc: "2 present" },
+      { points: 36, desc: "1.5 presentq" },
+      { points: 24, desc: "1 present" },
+      { points: 12, desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 7<br>Slope Part B",
+    options: [
+      { points: 72, desc: "v = Δx / t = rise/run<br>30/4<br>7.5" },
+      { points: 60, desc: "2.5 present" },
+      { points: 48, desc: "2 present" },
+      { points: 36, desc: "1.5 presentq" },
+      { points: 24, desc: "1 present" },
+      { points: 12, desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  }
+];
+
+// --------- BUILD TABLE ----------
+const tbody = document.querySelector("#rubric-table tbody");
+const selectedByRow = new Array(rubricRows.length).fill(0);
+
+rubricRows.forEach((row, rowIndex) => {
+  const tr = document.createElement("tr");
+
+  const th = document.createElement("th");
+  th.className = "criteria-col";
+  th.innerHTML = row.criteria;
+  tr.appendChild(th);
+
+  row.options.forEach((opt, colIndex) => {
+    const td = document.createElement("td");
+    td.className = "option-cell";
+    td.dataset.rowIndex = rowIndex.toString();
+    td.dataset.points = opt.points.toString();
+    td.innerHTML = `<span class="points">${opt.points}</span>${opt.desc}`;
+    td.addEventListener("click", () => toggleCell(td));
+    tr.appendChild(td);
+  });
+
+  tbody.appendChild(tr);
+});
+
+// --------- SELECTION + TOTAL ----------
+function toggleCell(td) {
+  const rowIndex = parseInt(td.dataset.rowIndex, 10);
+  const points = parseFloat(td.dataset.points);
+
+  const alreadySelected = td.classList.contains("selected");
+
+  // clear existing selection in this row
+  const rowTds = td.parentElement.querySelectorAll("td.option-cell");
+  rowTds.forEach(cell => cell.classList.remove("selected"));
+  selectedByRow[rowIndex] = 0;
+
+  // if it wasn't selected before, select it now
+  if (!alreadySelected) {
+    td.classList.add("selected");
+    selectedByRow[rowIndex] = points;
+  }
+
+  updateTotal();
+}
+
+function updateTotal() {
+  const total = selectedByRow.reduce((sum, val) => sum + val, 0);
+  document.getElementById("total-points").textContent = total;
+}
+
+</script>
+</body>
+</html>
