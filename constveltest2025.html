@@ -205,3 +205,93 @@ const rubricRows = [
     options: [
       { points: 72, desc: "something on the graph<br>slope tells velocity<br>cm/s" },
       { points: 60, desc: "2.5 present" },
+      { points: 48, desc: "2 present" },
+      { points: 36, desc: "1.5 presentq" },
+      { points: 24, desc: "1 present" },
+      { points: 12, desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  },
+  {
+    criteria: "Question 7<br>Slope Part B",
+    options: [
+      { points: 72, desc: "v = Δx / t = rise/run<br>30/4<br>7.5" },
+      { points: 60, desc: "2.5 present" },
+      { points: 48, desc: "2 present" },
+      { points: 36, desc: "1.5 presentq" },
+      { points: 24, desc: "1 present" },
+      { points: 12, desc: "0.5 present" },
+      { points: 0,  desc: "insufficient evidence." }
+    ]
+  }
+];
+
+// --------- BUILD TABLE ----------
+const tbody = document.querySelector("#rubric-table tbody");
+const selectedByRow = new Array(rubricRows.length).fill(0);
+
+rubricRows.forEach((row, rowIndex) => {
+  const tr = document.createElement("tr");
+
+  const th = document.createElement("th");
+  th.className = "criteria-col";
+  th.innerHTML = row.criteria;
+  tr.appendChild(th);
+
+  row.options.forEach((opt) => {
+    const td = document.createElement("td");
+    td.className = "option-cell";
+    td.dataset.rowIndex = rowIndex.toString();
+    td.dataset.points = opt.points.toString();
+    td.innerHTML = `<span class="points">${opt.points}</span>${opt.desc}`;
+    td.addEventListener("click", () => toggleCell(td));
+    tr.appendChild(td);
+  });
+
+  tbody.appendChild(tr);
+});
+
+// --------- SELECTION + TOTAL ----------
+function toggleCell(td) {
+  const rowIndex = parseInt(td.dataset.rowIndex, 10);
+  const points = parseFloat(td.dataset.points);
+
+  const alreadySelected = td.classList.contains("selected");
+
+  // clear existing selection in this row
+  const rowTds = td.parentElement.querySelectorAll("td.option-cell");
+  rowTds.forEach(cell => cell.classList.remove("selected"));
+  selectedByRow[rowIndex] = 0;
+
+  // if it wasn't selected before, select it now
+  if (!alreadySelected) {
+    td.classList.add("selected");
+    selectedByRow[rowIndex] = points;
+  }
+
+  updateTotal();
+}
+
+function updateTotal() {
+  const total = selectedByRow.reduce((sum, val) => sum + val, 0);
+  document.getElementById("total-points").textContent = total;
+}
+
+// --------- RESET ALL ----------
+document.getElementById("reset-btn").addEventListener("click", () => {
+  // Clear selections
+  document.querySelectorAll("td.option-cell").forEach(cell => {
+    cell.classList.remove("selected");
+  });
+
+  // Reset point values
+  for (let i = 0; i < selectedByRow.length; i++) {
+    selectedByRow[i] = 0;
+  }
+
+  updateTotal();
+});
+</script>
+
+</body>
+</html>
