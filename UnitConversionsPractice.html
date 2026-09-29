@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit Conversion Practice</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #eef2f7;
+  }
+  .container {
+    display: grid;
+    grid-template-columns: 28% 42% 30%;
+    gap: 12px;
+    padding: 12px;
+    height: 100vh;
+    box-sizing: border-box;
+  }
+  .panel {
+    background: white;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .center-panel {
+    padding-top: 32px;
+  }
+  .left-panel {
+    overflow: hidden;
+  }
+  .factors-scroll {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 5px;
+  }
+  .factor-group {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 10px;
+    background: #fafafa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .tile {
+    background: #dfeaff;
+    border: 1px solid #777;
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: grab;
+    user-select: none;
+    font-weight: bold;
+  }
+  #problem {
+    font-size: 26px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 25px;
+  }
+  .template {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+    margin-bottom: 25px;
+  }
+  .frac {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .line {
+    width: 170px;
+    border-top: 3px solid #000;
+  }
+  .drop {
+    width: 160px;
+    height: 48px;
+    border: 2px dashed #666;
+    border-radius: 6px;
+    background: #fafafa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    outline: none;
+  }
+  .drop:focus {
+    background: #fff;
+    border-color: #0066cc;
+  }
+  .given-input {
+    width: 150px;
+    height: 44px;
+    font-size: 16px;
+    text-align: center;
+    border: 2px solid #666;
+    border-radius: 6px;
+  }
+  .answer-group {
+    display: flex;
+    gap: 6px;
+  }
+  .ans-num {
+    width: 90px;
+    height: 44px;
+    font-size: 16px;
+    text-align: center;
+    border: 2px solid #666;
+    border-radius: 6px;
+  }
+  .ans-unit {
+    width: 70px;
+    height: 44px;
+    font-size: 16px;
+    text-align: center;
+    border: 2px solid #666;
+    border-radius: 6px;
+  }
+  .controls {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 15px;
+  }
+  button {
+    padding: 10px 16px;
+    margin: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 1px solid #888;
+    background: #f0f0f0;
+  }
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  .stats {
+    margin-top: 15px;
+    font-size: 15px;
+  }
+  .stats div {
+    margin-bottom: 1em;
+  }
+  .stats div:last-child {
+    margin-bottom: 0;
+  }
+  .feedback {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    min-height: 24px;
+  }
+  .master-banner {
+    display: block;
+    margin-top: 12px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #d97706;
+    text-align: center;
+  }
+  .green { color: green; text-decoration: line-through; font-weight: bold; }
+  .ok { color: green; }
+  .bad { color: #c00; }
+  .info { color: #06c; }
+  iframe {
+    border: none;
+    border-radius: 6px;
+    flex-grow: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="panel left-panel">
+    <h3>Conversion Factors</h3>
+    <div class="factors-scroll" id="factors"></div>
+  </div>
+
+  <div class="panel center-panel">
+    <div id="problem"></div>
+    
+    <div class="template">
+      <input id="givenInput" class="given-input" placeholder="given quantity">
+      <div style="font-size: 20px; font-weight: bold;">×</div>
+      <div class="frac">
+        <div id="num" class="drop" contenteditable="true"></div>
+        <div class="line"></div>
+        <div id="den" class="drop" contenteditable="true"></div>
+      </div>
+      <div style="font-size: 20px; font-weight: bold;">=</div>
+      <div class="answer-group">
+        <input id="ansNum" class="ans-num" placeholder="number">
+        <input id="ansUnit" class="ans-unit" placeholder="unit">
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="check" onclick="checkWork()">Check My Work</button>
+      <button id="next" onclick="newProblem()" disabled>Next Problem</button>
+      <button id="whyBtn" onclick="whyCorrect()" disabled>Why is this correct?</button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+
+    <div class="stats">
+      <div>Mastery Streak: <span id="streak">0</span>/5</div>
+      <div>Correct After Feedback: <span id="hints">0</span></div>
+    </div>
+
+    <div id="why" style="margin-top: 15px;"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Desmos Calculator</h3>
+    <iframe src="https://www.desmos.com/scientific" width="100%" height="100%"></iframe>
+  </div>
+</div>
+
+<script>
+const factors = [
+  ['10 mm', '1 cm'],
+  ['100 cm', '1 m'],
+  ['1000 m', '1 km'],
+  ['12 in', '1 ft'],
+  ['5280 ft', '1 mi'],
+  ['2.54 cm', '1 in'],
+  ['60 s', '1 min'],
+  ['60 min', '1 hr'],
+  ['24 hr', '1 day'],
+  ['365 days', '1 yr'],
+  ['1000 mg', '1 g'],
+  ['1000 g', '1 kg'],
+  ['16 oz', '1 lb'],
+  ['454 g', '1 lb']
+];
+
+let streak = 0, hints = 0, current, hadError = false, scored = false;
+let directionQueue = [];
+
+function playTadaSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [
+      { freq: 523.25, start: 0, duration: 0.12 },    // C5
+      { freq: 659.25, start: 0.12, duration: 0.12 }, // E5
+      { freq: 783.99, start: 0.24, duration: 0.12 }, // G5
+      { freq: 1046.50, start: 0.36, duration: 0.5 }  // C6
+    ];
+
+    notes.forEach(({ freq, start, duration }) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      
+      gain.gain.setValueAtTime(0.25, audioCtx.currentTime + start);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + start + duration);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.start(audioCtx.currentTime + start);
+      osc.stop(audioCtx.currentTime + start + duration);
+    });
+  } catch (e) {
+    // Audio Context fallback if unsupported
+  }
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function getNextDirection() {
+  if (directionQueue.length === 0) {
+    directionQueue = [
+      'smallToBig', 'smallToBig', 'smallToBig', 'smallToBig', 'smallToBig',
+      'bigToSmall', 'bigToSmall', 'bigToSmall', 'bigToSmall', 'bigToSmall'
+    ];
+    shuffleArray(directionQueue);
+  }
+  return directionQueue.pop();
+}
+
+function renderFactors() {
+  let html = '';
+  factors.forEach((f, i) => {
+    html += `
+      <div class="factor-group">
+        <div class="tile" draggable="true" ondragstart="drag(event)" id="f_${i}_0">${f[0]}</div>
+        <span style="font-weight:bold;">=</span>
+        <div class="tile" draggable="true" ondragstart="drag(event)" id="f_${i}_1">${f[1]}</div>
+      </div>`;
+  });
+  document.getElementById('factors').innerHTML = html;
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData('text/plain', ev.target.innerText);
+}
+
+function getUnit(str) {
+  return str.trim().split(' ').slice(1).join(' ');
+}
+
+['num', 'den'].forEach(id => {
+  let el = document.getElementById(id);
+  el.ondragover = ev => ev.preventDefault();
+  el.ondrop = ev => {
+    ev.preventDefault();
+    el.innerText = ev.dataTransfer.getData('text/plain').trim();
+  };
+});
+
+function newProblem() {
+  scored = false;
+  hadError = false;
+  document.getElementById('check').disabled = false;
+  document.getElementById('check').innerText = 'Check My Work';
+  document.getElementById('next').disabled = true;
+  document.getElementById('whyBtn').disabled = true;
+  document.getElementById('feedback').innerHTML = '';
+  document.getElementById('why').innerHTML = '';
+  
+  ['num', 'den'].forEach(i => document.getElementById(i).innerText = '');
+  document.getElementById('givenInput').value = '';
+  document.getElementById('ansNum').value = '';
+  document.getElementById('ansUnit').value = '';
+
+  let f = factors[Math.floor(Math.random() * factors.length)];
+  let v = (Math.random() * 500 + 1).toFixed(1);
+  let direction = getNextDirection();
+
+  let u1, u2;
+  if (direction === 'smallToBig') {
+    u1 = getUnit(f[0]);
+    u2 = getUnit(f[1]);
+  } else {
+    u1 = getUnit(f[1]);
+    u2 = getUnit(f[0]);
+  }
+
+  current = { f, v, from: u1, to: u2 };
+  document.getElementById('problem').innerText = `Convert ${v} ${u1} to ${u2}`;
+}
+
+function fail(msg) {
+  hadError = true;
+  streak = 0;
+  document.getElementById('streak').innerText = 0;
+  document.getElementById('feedback').innerHTML = `<span class="bad">❌ ${msg}</span>`;
+  document.getElementById('check').innerText = 'Recheck My Work';
+}
+
+function isAnswerCloseEnough(enteredNum, expected) {
+  if (isNaN(enteredNum)) return false;
+  
+  let absDiff = Math.abs(enteredNum - expected);
+  let relativeDiff = Math.abs((enteredNum - expected) / expected);
+
+  if (absDiff <= 0.05 || relativeDiff <= 0.015) {
+    return true;
+  }
+
+  let roundedTenths = parseFloat(expected.toFixed(1));
+  let roundedHundredths = parseFloat(expected.toFixed(2));
+  let roundedWhole = Math.round(expected);
+
+  return enteredNum === roundedTenths || enteredNum === roundedHundredths || enteredNum === roundedWhole;
+}
+
+function checkWork() {
+  if (scored) return;
+
+  let given = document.getElementById('givenInput').value.trim();
+  if (given !== `${current.v} ${current.from}`) {
+    return fail('Check the given quantity in the first box.');
+  }
+
+  let n = document.getElementById('num').innerText.trim();
+  let d = document.getElementById('den').innerText.trim();
+  let f = current.f;
+
+  if (!(n === f[0] || n === f[1]) || !(d === f[0] || d === f[1])) {
+    return fail('Find the conversion factor containing both units.');
+  }
+
+  let correctDen = (getUnit(f[0]) === current.from) ? f[0] : f[1];
+  let correctNum = (correctDen === f[0]) ? f[1] : f[0];
+
+  if (n !== correctNum || d !== correctDen) {
+    return fail('Which unit should cancel?');
+  }
+
+  let ansUnit = document.getElementById('ansUnit').value.trim();
+  if (ansUnit !== current.to) {
+    return fail('Check the final unit.');
+  }
+
+  let expected = parseFloat(current.v) * (parseFloat(correctNum) / parseFloat(correctDen));
+  let ansNum = parseFloat(document.getElementById('ansNum').value);
+
+  if (!isAnswerCloseEnough(ansNum, expected)) {
+    return fail('Conversion setup is correct. Check your calculation.');
+  }
+
+  scored = true;
+  document.getElementById('check').disabled = true;
+  document.getElementById('next').disabled = false;
+  document.getElementById('whyBtn').disabled = false;
+
+  if (hadError) {
+    hints++;
+    document.getElementById('hints').innerText = hints;
+    document.getElementById('feedback').innerHTML = '<span class="info">✅ Correct after feedback!</span>';
+  } else {
+    streak++;
+    document.getElementById('streak').innerText = streak;
+    document.getElementById('feedback').innerHTML = '<span class="ok">✅ Correct!</span>';
+  }
+
+  if (streak >= 5) {
+    document.getElementById('feedback').innerHTML += '<span class="master-banner">🏆 Conversion Master! 5 in a row.</span>';
+    playTadaSound();
+  }
+}
+
+function whyCorrect() {
+  if (!scored) return;
+  let want = current.from;
+  let keep = current.to;
+  document.getElementById('why').innerHTML = `
+    <hr><b>Why this is correct:</b><br>
+    <span class="green">${want}</span> cancels because it appears in both a numerator and a denominator. 
+    The remaining unit is <b>${keep}</b>, which matches the unit requested in the question.`;
+}
+
+renderFactors();
+newProblem();
+</script>
+
+</body>
+</html>
