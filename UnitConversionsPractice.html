@@ -5,94 +5,107 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unit Conversion Practice</title>
 <style>
+  * {
+    box-sizing: border-box;
+  }
   body {
     font-family: Arial, sans-serif;
     margin: 0;
+    padding: 8px;
     background: #eef2f7;
-  }
-  .container {
-    display: grid;
-    grid-template-columns: 28% 42% 30%;
-    gap: 12px;
-    padding: 12px;
     height: 100vh;
-    box-sizing: border-box;
+  }
+  .app-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+  }
+  .top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    flex: 1 1 50%;
+    min-height: 220px;
+  }
+  .bottom-row {
+    flex: 1 1 50%;
+    min-height: 220px;
   }
   .panel {
     background: white;
-    border-radius: 10px;
-    padding: 16px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
-  .center-panel {
-    padding-top: 32px;
-  }
-  .left-panel {
-    overflow: hidden;
+  .panel h3 {
+    margin: 0 0 8px 0;
+    font-size: 15px;
+    text-align: center;
   }
   .factors-scroll {
     overflow-y: auto;
     flex-grow: 1;
-    padding-right: 5px;
+    padding-right: 4px;
   }
   .factor-group {
     border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 8px;
-    margin-bottom: 10px;
+    border-radius: 5px;
+    padding: 4px;
+    margin-bottom: 6px;
     background: #fafafa;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
   }
   .tile {
     background: #dfeaff;
     border: 1px solid #777;
     border-radius: 4px;
-    padding: 6px 10px;
+    padding: 4px 8px;
     cursor: grab;
     user-select: none;
     font-weight: bold;
+    font-size: 13px;
   }
   #problem {
-    font-size: 26px;
+    font-size: 20px;
     font-weight: bold;
     text-align: center;
-    margin-top: 10px;
-    margin-bottom: 25px;
+    margin-bottom: 12px;
   }
   .template {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    margin-top: 20px;
-    margin-bottom: 25px;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
   }
   .frac {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
   }
   .line {
-    width: 170px;
-    border-top: 3px solid #000;
+    width: 120px;
+    border-top: 2px solid #000;
   }
   .drop {
-    width: 160px;
-    height: 48px;
+    width: 110px;
+    height: 36px;
     border: 2px dashed #666;
-    border-radius: 6px;
+    border-radius: 5px;
     background: #fafafa;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     outline: none;
   }
@@ -101,45 +114,44 @@
     border-color: #0066cc;
   }
   .given-input {
-    width: 150px;
-    height: 44px;
-    font-size: 16px;
+    width: 120px;
+    height: 36px;
+    font-size: 14px;
     text-align: center;
     border: 2px solid #666;
-    border-radius: 6px;
+    border-radius: 5px;
   }
   .answer-group {
     display: flex;
-    gap: 6px;
+    gap: 4px;
   }
   .ans-num {
-    width: 90px;
-    height: 44px;
-    font-size: 16px;
+    width: 75px;
+    height: 36px;
+    font-size: 14px;
     text-align: center;
     border: 2px solid #666;
-    border-radius: 6px;
+    border-radius: 5px;
   }
   .ans-unit {
-    width: 70px;
-    height: 44px;
-    font-size: 16px;
+    width: 55px;
+    height: 36px;
+    font-size: 14px;
     text-align: center;
     border: 2px solid #666;
-    border-radius: 6px;
+    border-radius: 5px;
   }
   .controls {
     text-align: center;
-    margin-top: 20px;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
   }
   button {
-    padding: 10px 16px;
-    margin: 4px;
-    font-size: 14px;
+    padding: 6px 12px;
+    margin: 2px;
+    font-size: 13px;
     font-weight: bold;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 5px;
     border: 1px solid #888;
     background: #f0f0f0;
   }
@@ -147,26 +159,22 @@
     cursor: not-allowed;
     opacity: 0.5;
   }
-  .stats {
-    margin-top: 15px;
-    font-size: 15px;
-  }
-  .stats div {
-    margin-bottom: 1em;
-  }
-  .stats div:last-child {
-    margin-bottom: 0;
+  .stats-and-feedback {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   .feedback {
-    margin-top: 15px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
-    min-height: 24px;
+    text-align: center;
   }
   .master-banner {
     display: block;
-    margin-top: 12px;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     color: #d97706;
     text-align: center;
@@ -178,30 +186,37 @@
   iframe {
     border: none;
     border-radius: 6px;
-    flex-grow: 1;
+    width: 100%;
+    height: 100%;
   }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="panel left-panel">
-    <h3>Conversion Factors</h3>
-    <div class="factors-scroll" id="factors"></div>
+<div class="app-layout">
+  <div class="top-row">
+    <div class="panel">
+      <h3>Conversion Factors</h3>
+      <div class="factors-scroll" id="factors"></div>
+    </div>
+    <div class="panel">
+      <h3>Desmos Calculator</h3>
+      <iframe src="https://www.desmos.com/scientific"></iframe>
+    </div>
   </div>
 
-  <div class="panel center-panel">
+  <div class="panel bottom-row">
     <div id="problem"></div>
     
     <div class="template">
       <input id="givenInput" class="given-input" placeholder="given quantity">
-      <div style="font-size: 20px; font-weight: bold;">×</div>
+      <div style="font-size: 18px; font-weight: bold;">×</div>
       <div class="frac">
         <div id="num" class="drop" contenteditable="true"></div>
         <div class="line"></div>
         <div id="den" class="drop" contenteditable="true"></div>
       </div>
-      <div style="font-size: 20px; font-weight: bold;">=</div>
+      <div style="font-size: 18px; font-weight: bold;">=</div>
       <div class="answer-group">
         <input id="ansNum" class="ans-num" placeholder="number">
         <input id="ansUnit" class="ans-unit" placeholder="unit">
@@ -216,17 +231,12 @@
 
     <div id="feedback" class="feedback"></div>
 
-    <div class="stats">
+    <div class="stats-and-feedback">
       <div>Mastery Streak: <span id="streak">0</span>/5</div>
       <div>Correct After Feedback: <span id="hints">0</span></div>
     </div>
 
-    <div id="why" style="margin-top: 15px;"></div>
-  </div>
-
-  <div class="panel">
-    <h3>Desmos Calculator</h3>
-    <iframe src="https://www.desmos.com/scientific" width="100%" height="100%"></iframe>
+    <div id="why" style="margin-top: 6px; font-size: 13px;"></div>
   </div>
 </div>
 
@@ -255,10 +265,10 @@ function playTadaSound() {
   try {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const notes = [
-      { freq: 523.25, start: 0, duration: 0.12 },    // C5
-      { freq: 659.25, start: 0.12, duration: 0.12 }, // E5
-      { freq: 783.99, start: 0.24, duration: 0.12 }, // G5
-      { freq: 1046.50, start: 0.36, duration: 0.5 }  // C6
+      { freq: 523.25, start: 0, duration: 0.12 },
+      { freq: 659.25, start: 0.12, duration: 0.12 },
+      { freq: 783.99, start: 0.24, duration: 0.12 },
+      { freq: 1046.50, start: 0.36, duration: 0.5 }
     ];
 
     notes.forEach(({ freq, start, duration }) => {
@@ -277,9 +287,7 @@ function playTadaSound() {
       osc.start(audioCtx.currentTime + start);
       osc.stop(audioCtx.currentTime + start + duration);
     });
-  } catch (e) {
-    // Audio Context fallback if unsupported
-  }
+  } catch (e) {}
 }
 
 function shuffleArray(array) {
@@ -448,7 +456,7 @@ function whyCorrect() {
   let want = current.from;
   let keep = current.to;
   document.getElementById('why').innerHTML = `
-    <hr><b>Why this is correct:</b><br>
+    <hr style="margin: 4px 0;"><b>Why this is correct:</b><br>
     <span class="green">${want}</span> cancels because it appears in both a numerator and a denominator. 
     The remaining unit is <b>${keep}</b>, which matches the unit requested in the question.`;
 }
