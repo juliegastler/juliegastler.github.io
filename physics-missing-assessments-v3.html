@@ -9,7 +9,7 @@
 .view-student label{display:inline-flex;flex-direction:row;align-items:center;gap:6px;font-size:13px;margin:5px 12px 0 0}
 .view-student input{width:auto}.view-group{margin-top:22px}.view-group h2{margin:0 0 10px}
 @media print{.toolbar,.tabs,.privacy,.viewbar button{display:none!important}}
-</style></head><body><main><h1>Missing Assessments</h1><p>Freshman Physics · AP Physics 1 / C: Mechanics</p><div class="privacy">Student information stays in this browser's local storage. Avoid shared devices and unencrypted backups. Clearing browser data can erase the tracker; export a backup regularly.</div><div class="toolbar"><button class="primary" id="addAssessment">+ Add assessment</button><button id="expand">Open all panels</button><button id="collapse">Close all panels</button><button id="directoryToggle">Student directory</button><button id="export">Export backup</button><button id="import">Import backup</button><input class="hidden" id="file" type="file" accept=".json,application/json"><label style="flex-direction:row;align-items:center;gap:6px"> <input id="showDone" type="checkbox" style="width:auto"> Show completed</label></div><section id="directoryPanel" class="directory hidden"><div class="headrow"><h2>Student directory</h2><button id="directoryClose">Close</button></div><p class="muted">Edit a student here to update their information across all assessment panels. Removing a student from the directory does not remove assessment entries.</p><form id="directoryForm" class="form"><label>Student name<input name="name" required placeholder="Student name"></label><label>Class block<input name="block" placeholder="2A"></label><label>Advisory teacher<input name="advisory" placeholder="Teacher"></label><label>Advisory block<input name="advisoryBlock" placeholder="1B"></label><button type="submit" class="primary">Save student</button></form><div id="directoryList"></div></section><div class="tabs" role="navigation" aria-label="Tracker views">
+</style></head><body><main><h1>Missing Assessments</h1><p>Freshman Physics · AP Physics 1 / C: Mechanics</p><div class="privacy">Student information stays in this browser's local storage. Avoid shared devices and unencrypted backups. Clearing browser data can erase the tracker; export a backup regularly.</div><div class="toolbar"><button class="primary" id="addAssessment">+ Add assessment</button><button id="expand">Open all panels</button><button id="collapse">Close all panels</button><button id="directoryToggle">Student directory</button><button id="export">Export backup</button><button id="import">Import backup</button><input class="hidden" id="file" type="file" accept=".json,application/json"><label style="flex-direction:row;align-items:center;gap:6px"> <input id="showDone" type="checkbox" style="width:auto"> Show completed</label></div><section id="directoryPanel" class="directory hidden"><div class="headrow"><h2>Student directory</h2><button id="directoryClose">Close</button></div><div class="toolbar"><button type="button" id="importStudentsCsv">Import students from CSV</button><button type="button" id="csvTemplate">Download CSV template</button><input class="hidden" type="file" id="csvFile" accept=".csv,text/csv"></div><p class="muted">CSV columns: <strong>Student name, Class block, Advisory teacher, Advisory block</strong>. Existing students with matching names will be updated; assessment entries will be kept. Export a backup before importing.</p><p class="muted">Edit a student here to update their information across all assessment panels. Removing a student from the directory does not remove assessment entries.</p><form id="directoryForm" class="form"><label>Student name<input name="name" required placeholder="Student name"></label><label>Class block<input name="block" placeholder="2A"></label><label>Advisory teacher<input name="advisory" placeholder="Teacher"></label><label>Advisory block<input name="advisoryBlock" placeholder="1B"></label><button type="submit" class="primary">Save student</button></form><div id="directoryList"></div></section><div class="tabs" role="navigation" aria-label="Tracker views">
 <button type="button" class="active" data-view="assessments">Assessments</button>
 <button type="button" data-view="class">By Class</button>
 <button type="button" data-view="advisory">By Advisory</button>
@@ -96,6 +96,71 @@ $('viewResults').addEventListener('change',e=>{
  const a=find(cb.dataset.aid),student=a?.students.find(s=>s.id===cb.dataset.vcheck);
  if(student){student.done=cb.checked;save();render();renderViews()}
 });
+
+function parseCSV(text){
+ const rows=[];let row=[],field='',quoted=false;
+ text=text.replace(/^\uFEFF/,'');
+ for(let i=0;i<text.length;i++){
+  const c=text[i];
+  if(quoted){
+   if(c==='"'&&text[i+1]==='"'){field+='"';i++}
+   else if(c==='"')quoted=false;
+   else field+=c;
+  }else if(c==='"'&&field==='')quoted=true;
+  else if(c===','){row.push(field);field=''}
+  else if(c==='\n'||c==='\r'){
+   if(c==='\r'&&text[i+1]==='\n')i++;
+   row.push(field);if(row.some(v=>v.trim()))rows.push(row);
+   row=[];field='';
+  }else field+=c;
+ }
+ if(quoted)throw Error('Unclosed quoted field in CSV');
+ row.push(field);if(row.some(v=>v.trim()))rows.push(row);
+ return rows;
+}
+function csvDownload(name,content){
+ const blob=new Blob([content],{type:'text/csv;charset=utf-8'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+$('csvTemplate').onclick=()=>csvDownload('student-directory-template.csv',
+ 'Student name,Class block,Advisory teacher,Advisory block\r\n"Example, Student",3A,Smith,1A\r\n');
+$('importStudentsCsv').onclick=()=>$('csvFile').click();
+$('csvFile').onchange=async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+  const rows=parseCSV(await file.text());
+  if(rows.length<2)throw Error('CSV must have a header row and at least one student.');
+  const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const aliases=[
+   ['studentname','name','student','fullname','studentfullname'],
+   ['classblock','block','classperiod','period','physicsblock','class'],
+   ['advisoryteacher','advisory','advisor','advisorname','advisorteacher'],
+   ['advisoryblock','advisoryperiod','advisorblock','advisorperiod']
+  ];
+  const headers=rows[0].map(norm);
+  const idx=aliases.map(a=>headers.findIndex(h=>a.includes(h)));
+  if(idx[0]<0)throw Error('A "Student name" column is required. Download the CSV template for the expected format.');
+  const incoming=new Map();let skipped=0;
+  for(const row of rows.slice(1)){
+   const values=idx.map(i=>i<0?'':String(row[i]||'').trim());
+   if(!values[0]){skipped++;continue}
+   const [name,block,advisory,advisoryBlock]=values;
+   incoming.set(name.toLocaleLowerCase(),{name,block,advisory,advisoryBlock});
+  }
+  if(!incoming.size)throw Error('No student names found.');
+  const existing=[...incoming.keys()].filter(k=>data.directory[k]).length;
+  const message=`Import ${incoming.size} students?\n\n${incoming.size-existing} new, ${existing} matching existing names will be updated.\n${skipped} blank-name rows skipped.\n\nMissing values in the CSV will replace existing values. Assessment records and completion statuses will be preserved.\n\nPlease export a backup first.`;
+  if(!confirm(message))return;
+  for(const [key,x] of incoming){
+   data.directory[key]=x;
+   syncStudent(x.name,x);
+  }
+  save();render();
+  alert(`Imported ${incoming.size} students (${incoming.size-existing} new, ${existing} updated).`);
+ }catch(err){alert('CSV import failed: '+err.message)}
+ e.target.value='';
+};
 const originalRender=render;
 render=function(){originalRender();if(currentView!=='assessments')renderViews()};
 ;render()})();
