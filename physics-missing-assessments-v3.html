@@ -1,0 +1,102 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Missing Assessments Tracker</title><style>
+:root{font-family:system-ui,Segoe UI,sans-serif;color:#202a35;background:#f4f6f9}*{box-sizing:border-box}body{margin:0}main{max-width:1150px;margin:auto;padding:24px}h1{margin:0 0 6px}p{color:#536171}button,input,select{font:inherit}button{cursor:pointer;border:1px solid #bdc8d4;background:white;border-radius:8px;padding:8px 12px}button:hover{background:#eaf0f8}.primary{background:#254e80;color:white;border-color:#254e80}.primary:hover{background:#17385d}.danger{color:#a12424}.toolbar,.line{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.toolbar{margin:18px 0}.group{margin-top:26px}.group h2{margin-bottom:10px}.panel{background:white;border:1px solid #d7dfe8;border-radius:12px;margin:10px 0;overflow:hidden}.panel summary{cursor:pointer;padding:15px;font-weight:650;display:flex;align-items:center;gap:12px}.panel summary::marker{color:#5378a3}.count{font-size:12px;color:#405c79;background:#e8eff8;padding:4px 8px;border-radius:20px}.content{padding:0 15px 15px}.entry{display:grid;grid-template-columns:minmax(150px,2fr) repeat(3,minmax(90px,1fr)) auto;gap:8px;align-items:center;border-top:1px solid #e6ebf1;padding:10px 0}.entry small{color:#697788}.entry.done{opacity:.55}.entry.done .name{text-decoration:line-through}.entry .name{font-weight:600}.entry .actions{display:flex;gap:5px}.form{display:grid;grid-template-columns:2fr 1fr 1.4fr 1fr auto;gap:8px;margin-top:14px;align-items:end}label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#506071}input,select{padding:8px;border:1px solid #bbc7d3;border-radius:7px;min-width:0;width:100%;background:white}.empty{padding:14px;color:#627181}.muted{font-size:13px}.privacy{padding:10px 14px;background:#fff5dd;border-radius:9px;color:#59451b;font-size:13px}.hidden{display:none}.directory{background:white;border:1px solid #d7dfe8;border-radius:12px;padding:16px;margin:18px 0}.directory h2{margin:0 0 10px}.directory-row{display:grid;grid-template-columns:2fr 1fr 1.5fr 1fr auto;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #e6ebf1}.directory-row button{white-space:nowrap}@media(max-width:700px){.directory-row{grid-template-columns:1fr 1fr}.directory-row span:first-child{grid-column:1/-1}}.headrow{display:flex;justify-content:space-between;align-items:center;gap:12px}.stat{color:#51677f}.doneList{margin-top:12px}.doneList summary{padding:8px 0;font-size:13px;color:#647287}.doneList .entry{padding:7px 0}@media(max-width:700px){main{padding:12px}.form{grid-template-columns:1fr 1fr}.form label:first-child{grid-column:1/-1}.entry{grid-template-columns:1fr 1fr}.entry .name{grid-column:1/-1}.entry .actions{grid-column:1/-1}}
+
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.tabs button.active{background:#254e80;color:white}
+.viewbar{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:14px 0}
+.viewbar label{min-width:170px}.view-section{background:white;border:1px solid #d7dfe8;border-radius:12px;padding:16px;margin:12px 0}
+.view-section h3{margin:0 0 12px}.view-student{padding:9px 0;border-top:1px solid #e6ebf1}
+.view-student .student-meta{font-size:12px;color:#536171}
+.view-student label{display:inline-flex;flex-direction:row;align-items:center;gap:6px;font-size:13px;margin:5px 12px 0 0}
+.view-student input{width:auto}.view-group{margin-top:22px}.view-group h2{margin:0 0 10px}
+@media print{.toolbar,.tabs,.privacy,.viewbar button{display:none!important}}
+</style></head><body><main><h1>Missing Assessments</h1><p>Freshman Physics · AP Physics 1 / C: Mechanics</p><div class="privacy">Student information stays in this browser's local storage. Avoid shared devices and unencrypted backups. Clearing browser data can erase the tracker; export a backup regularly.</div><div class="toolbar"><button class="primary" id="addAssessment">+ Add assessment</button><button id="expand">Open all panels</button><button id="collapse">Close all panels</button><button id="directoryToggle">Student directory</button><button id="export">Export backup</button><button id="import">Import backup</button><input class="hidden" id="file" type="file" accept=".json,application/json"><label style="flex-direction:row;align-items:center;gap:6px"> <input id="showDone" type="checkbox" style="width:auto"> Show completed</label></div><section id="directoryPanel" class="directory hidden"><div class="headrow"><h2>Student directory</h2><button id="directoryClose">Close</button></div><p class="muted">Edit a student here to update their information across all assessment panels. Removing a student from the directory does not remove assessment entries.</p><form id="directoryForm" class="form"><label>Student name<input name="name" required placeholder="Student name"></label><label>Class block<input name="block" placeholder="2A"></label><label>Advisory teacher<input name="advisory" placeholder="Teacher"></label><label>Advisory block<input name="advisoryBlock" placeholder="1B"></label><button type="submit" class="primary">Save student</button></form><div id="directoryList"></div></section><div class="tabs" role="navigation" aria-label="Tracker views">
+<button type="button" class="active" data-view="assessments">Assessments</button>
+<button type="button" data-view="class">By Class</button>
+<button type="button" data-view="advisory">By Advisory</button>
+</div>
+<div id="app"></div><section id="teacherViews" class="hidden">
+<div class="viewbar"><label id="viewFilterLabel">Choose block<select id="viewFilter"></select></label>
+<button type="button" id="viewPrint">Print current view</button></div>
+<div id="viewResults"></div></section><datalist id="studentNames"></datalist><datalist id="advisoryNames"></datalist></main><script>
+(()=>{'use strict';const KEY='missing-assessments-local-v1';let data;try{data=JSON.parse(localStorage.getItem(KEY))}catch{}if(!data||!Array.isArray(data.assessments))data={assessments:[],directory:{}};if(!data.directory||typeof data.directory!=='object')data.directory={};const $=id=>document.getElementById(id);const uid=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random();const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const save=()=>localStorage.setItem(KEY,JSON.stringify(data));const groups=[['freshman','Freshman Physics'],['ap','AP Physics 1 / C: Mechanics']];const find=id=>data.assessments.find(a=>a.id===id);const updateDirectory=(s)=>{const key=s.name.trim().toLocaleLowerCase();if(key)data.directory[key]={name:s.name.trim(),block:s.block,advisory:s.advisory,advisoryBlock:s.advisoryBlock}};
+function render(){renderDirectory();const showDone=$('showDone').checked;$('studentNames').innerHTML=Object.values(data.directory).map(x=>`<option value="${esc(x.name)}"></option>`).join('');$('advisoryNames').innerHTML=[...new Set(Object.values(data.directory).map(x=>x.advisory).filter(Boolean))].map(x=>`<option value="${esc(x)}"></option>`).join('');$('app').innerHTML=groups.map(([g,title])=>{let aa=data.assessments.filter(a=>a.group===g).sort((a,b)=>(a.order??0)-(b.order??0));return `<section class="group"><div class="headrow"><h2>${title}</h2><span class="stat">${aa.reduce((n,a)=>n+a.students.filter(s=>!s.done).length,0)} outstanding</span></div>${aa.length?aa.map(a=>{let pending=a.students.filter(s=>!s.done),done=a.students.filter(s=>s.done);return `<details class="panel" data-id="${esc(a.id)}" ${a.open?'open':''}><summary><span>${esc(a.title)}</span><span class="count">${pending.length} missing</span></summary><div class="content"><div class="line"><button data-act="rename" data-id="${esc(a.id)}">Rename</button><button data-act="up" data-id="${esc(a.id)}">↑ Move up</button><button data-act="down" data-id="${esc(a.id)}">↓ Move down</button><button class="danger" data-act="delete-assessment" data-id="${esc(a.id)}">Delete assessment</button></div>${pending.length?pending.map(s=>entry(a,s)).join(''):'<div class="empty">No outstanding students.</div>'}<form class="form" data-form="${esc(a.id)}"><label>Student name<input name="name" list="studentNames" required autocomplete="off" placeholder="Student name"></label><label>Class block<input name="block" placeholder="e.g. 2A"></label><label>Advisory teacher<input name="advisory" list="advisoryNames" placeholder="Teacher"></label><label>Advisory block<input name="advisoryBlock" placeholder="e.g. 1B"></label><button class="primary" type="submit">Add</button></form>${showDone&&done.length?`<details class="doneList"><summary>${done.length} completed</summary>${done.map(s=>entry(a,s)).join('')}</details>`:''}</div></details>`}).join(''):'<div class="empty">No assessments yet.</div>'}</section>`}).join('');document.querySelectorAll('.panel').forEach(el=>el.addEventListener('toggle',()=>{const a=find(el.dataset.id);if(a)a.open=el.open;save()}));document.querySelectorAll('form[data-form]').forEach(form=>{const inp=form.elements.name;inp.addEventListener('input',()=>{const old=data.directory[inp.value.trim().toLocaleLowerCase()];if(old)for(const field of ['block','advisory','advisoryBlock'])form.elements[field].value=old[field]||''});form.addEventListener('submit',e=>{e.preventDefault();const a=find(form.dataset.form);if(!a)return;const s={id:uid(),name:form.elements.name.value.trim(),block:form.elements.block.value.trim(),advisory:form.elements.advisory.value.trim(),advisoryBlock:form.elements.advisoryBlock.value.trim(),done:false};if(!s.name)return;a.students.push(s);updateDirectory(s);a.open=true;save();render();document.querySelector(`[data-form="${CSS.escape(a.id)}"] input[name="name"]`)?.focus()})})}
+function entry(a,s){return `<div class="entry ${s.done?'done':''}"><div class="name">${esc(s.name)}</div><div><small>Class</small><div>${esc(s.block)||'—'}</div></div><div><small>Advisory</small><div>${esc(s.advisory)||'—'}</div></div><div><small>Advisory block</small><div>${esc(s.advisoryBlock)||'—'}</div></div><div class="actions"><label title="Completed" style="flex-direction:row;align-items:center"><input style="width:auto" type="checkbox" data-check="${esc(s.id)}" data-id="${esc(a.id)}" ${s.done?'checked':''}> Done</label><button data-act="edit" data-id="${esc(a.id)}" data-student="${esc(s.id)}">Edit</button><button class="danger" data-act="remove" data-id="${esc(a.id)}" data-student="${esc(s.id)}">×</button></div></div>`}
+$('app').addEventListener('change',e=>{const cb=e.target.closest('[data-check]');if(!cb)return;const a=find(cb.dataset.id),s=a?.students.find(x=>x.id===cb.dataset.check);if(s){s.done=cb.checked;save();render()}});$('app').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=find(b.dataset.id);if(!a)return;const act=b.dataset.act;let s=a.students.find(x=>x.id===b.dataset.student);if(act==='rename'){const name=prompt('Assessment name',a.title);if(name?.trim())a.title=name.trim()}if(act==='delete-assessment'){if(confirm(`Delete ${a.title} and all its entries?`))data.assessments=data.assessments.filter(x=>x!==a)}if(act==='remove'&&s){if(confirm(`Remove ${s.name} from ${a.title}?`))a.students=a.students.filter(x=>x!==s)}if(act==='edit'&&s){let v=prompt('Student name',s.name);if(v===null)return;if(!v.trim())return;s.name=v.trim();for(const [field,label] of [['block','Class block'],['advisory','Advisory teacher'],['advisoryBlock','Advisory block']]){v=prompt(label,s[field]||'');if(v!==null)s[field]=v.trim()}updateDirectory(s)}if(act==='up'||act==='down'){const subset=data.assessments.filter(x=>x.group===a.group).sort((x,y)=>(x.order??0)-(y.order??0));const i=subset.indexOf(a),j=i+(act==='up'?-1:1);if(j>=0&&j<subset.length){[subset[i],subset[j]]=[subset[j],subset[i]];subset.forEach((x,k)=>x.order=k)}}save();render()});function renderDirectory(){const entries=Object.values(data.directory).sort((a,b)=>a.name.localeCompare(b.name));$('directoryList').innerHTML=entries.length?entries.map(x=>`<div class="directory-row"><span><strong>${esc(x.name)}</strong></span><span>${esc(x.block)||'—'}</span><span>${esc(x.advisory)||'—'}</span><span>${esc(x.advisoryBlock)||'—'}</span><span class="line"><button data-dir="edit" data-name="${esc(x.name)}">Edit</button><button class="danger" data-dir="delete" data-name="${esc(x.name)}">Remove</button></span></div>`).join(''):'<p class="empty">No students saved yet. Add a student here or through an assessment.</p>'}
+function syncStudent(oldName,updated){for(const a of data.assessments)for(const s of a.students)if(s.name.trim().toLocaleLowerCase()===oldName.toLocaleLowerCase()){Object.assign(s,updated)}}
+$('directoryToggle').onclick=()=>{$('directoryPanel').classList.toggle('hidden');renderDirectory()};$('directoryClose').onclick=()=>$('directoryPanel').classList.add('hidden');
+$('directoryForm').onsubmit=e=>{e.preventDefault();const f=e.target;const x={name:f.elements.name.value.trim(),block:f.elements.block.value.trim(),advisory:f.elements.advisory.value.trim(),advisoryBlock:f.elements.advisoryBlock.value.trim()};if(!x.name)return;const key=x.name.toLocaleLowerCase();data.directory[key]=x;syncStudent(x.name,x);save();f.reset();render()};
+$('directoryList').onclick=e=>{const b=e.target.closest('[data-dir]');if(!b)return;const key=b.dataset.name.toLocaleLowerCase(),x=data.directory[key];if(!x)return;if(b.dataset.dir==='delete'){if(!confirm('Remove '+x.name+' from the saved directory? Existing assessment entries will remain.'))return;delete data.directory[key]}else{const updated={};for(const [field,label] of [['name','Student name'],['block','Class block'],['advisory','Advisory teacher'],['advisoryBlock','Advisory block']]){const v=prompt(label,x[field]||'');if(v===null)return;updated[field]=v.trim()}if(!updated.name)return;delete data.directory[key];data.directory[updated.name.toLocaleLowerCase()]=updated;syncStudent(x.name,updated)}save();render()};
+$('addAssessment').onclick=()=>{const choice=prompt('Which class? Enter F for Freshman Physics or A for AP Physics 1 / C: Mechanics','F');if(choice===null)return;const group=/^a/i.test(choice.trim())?'ap':'freshman';const title=prompt('Assessment name (e.g. U2 L1 Quiz)');if(!title?.trim())return;data.assessments.push({id:uid(),group,title:title.trim(),students:[],order:data.assessments.filter(a=>a.group===group).length,open:true});save();render()};$('expand').onclick=()=>{data.assessments.forEach(a=>a.open=true);save();render()};$('collapse').onclick=()=>{data.assessments.forEach(a=>a.open=false);save();render()};$('showDone').onchange=render;$('export').onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='assessment-tracker-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};$('import').onclick=()=>$('file').click();$('file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const parsed=JSON.parse(await f.text());if(!Array.isArray(parsed.assessments)||!parsed.assessments.every(a=>['freshman','ap'].includes(a.group)&&typeof a.title==='string'&&Array.isArray(a.students)))throw Error('Invalid tracker backup');if(!confirm('Replace all current tracker data with this backup?'))return;data={assessments:parsed.assessments,directory:parsed.directory&&typeof parsed.directory==='object'?parsed.directory:{}};save();render()}catch(err){alert('Could not import: '+err.message)}e.target.value=''}
+;let currentView='assessments';
+const viewButtons=[...document.querySelectorAll('[data-view]')];
+const completedToggle=$('showDone');
+function getStudentInfo(s){return data.directory[(s.name||'').trim().toLocaleLowerCase()]||s}
+function cleanText(x){return String(x||'').trim()}
+function viewRecords(){
+  return data.assessments.flatMap(a=>a.students.map(s=>({assessment:a,student:s,info:getStudentInfo(s)})))
+    .filter(r=>completedToggle.checked||!r.student.done);
+}
+function viewCheck(r){
+ return `<label><input type="checkbox" data-vcheck="${esc(r.student.id)}" data-aid="${esc(r.assessment.id)}" ${r.student.done?'checked':''}> ${esc(r.assessment.title)}${r.student.done?' (completed)':''}</label>`;
+}
+function renderViews(){
+ const isClass=currentView==='class';
+ const rows=viewRecords();
+ const field=isClass?'block':'advisoryBlock';
+ const values=[...new Set([...Object.values(data.directory).map(x=>cleanText(x[field])),...rows.map(r=>cleanText(r.info[field]))].filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+ const filter=$('viewFilter'),previous=filter.value;
+ filter.innerHTML='<option value="">All blocks</option>'+values.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+ if(values.includes(previous))filter.value=previous;
+ $('viewFilterLabel').firstChild.textContent=isClass?'Class block':'Advisory block';
+ const selected=filter.value;
+ const matches=rows.filter(r=>!selected||cleanText(r.info[field])===selected);
+ $('viewResults').innerHTML=groups.map(([group,title])=>{
+  const subset=matches.filter(r=>r.assessment.group===group);
+  let content='';
+  if(isClass){
+   const blocks=selected?[selected]:[...new Set(subset.map(r=>cleanText(r.info.block)||'Unassigned'))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+   content=blocks.map(block=>{
+    const inBlock=subset.filter(r=>(cleanText(r.info.block)||'Unassigned')===block);
+    const byAssessment=[...new Set(inBlock.map(r=>r.assessment.id))];
+    return `<section class="view-section"><h3>Class ${esc(block)} · ${inBlock.length} outstanding</h3>`+
+      (byAssessment.length?byAssessment.map(id=>{
+        const a=find(id),students=inBlock.filter(r=>r.assessment.id===id);
+        return `<details open><summary><strong>${esc(a.title)}</strong> <span class="count">${students.length}</span></summary>`+
+          students.map(r=>`<div class="view-student"><strong>${esc(r.info.name||r.student.name)}</strong><div class="student-meta">Advisory: ${esc(r.info.advisory)||'—'} · ${esc(r.info.advisoryBlock)||'—'}</div>${viewCheck(r)}</div>`).join('')+'</details>';
+      }).join(''):'<p class="empty">No missing assessments.</p>')+'</section>';
+   }).join('');
+  }else{
+   const teachers=[...new Set(subset.map(r=>cleanText(r.info.advisory)||'Unassigned'))].sort((a,b)=>a.localeCompare(b));
+   content=teachers.map(teacher=>{
+     const tRows=subset.filter(r=>(cleanText(r.info.advisory)||'Unassigned')===teacher);
+     const names=[...new Set(tRows.map(r=>(r.info.name||r.student.name).trim().toLocaleLowerCase()))];
+     return `<section class="view-section"><h3>${esc(teacher)} · ${names.length} students</h3>`+
+       names.map(key=>{
+        const studentRows=tRows.filter(r=>(r.info.name||r.student.name).trim().toLocaleLowerCase()===key);
+        const info=studentRows[0].info;
+        return `<div class="view-student"><strong>${esc(info.name||studentRows[0].student.name)}</strong><div class="student-meta">Class: ${esc(info.block)||'—'} · Advisory block: ${esc(info.advisoryBlock)||'—'}</div><div>${studentRows.map(viewCheck).join('')}</div></div>`;
+       }).join('')+'</section>';
+   }).join('');
+  }
+  return `<section class="view-group"><h2>${esc(title)}</h2>${content||'<div class="view-section empty">No matching students with outstanding assessments.</div>'}</section>`;
+ }).join('');
+}
+function switchView(view){
+ currentView=view;
+ $('app').classList.toggle('hidden',view!=='assessments');
+ $('teacherViews').classList.toggle('hidden',view==='assessments');
+ viewButtons.forEach(b=>{b.classList.toggle('active',b.dataset.view===view);b.setAttribute('aria-pressed',String(b.dataset.view===view))});
+ if(view!=='assessments')renderViews();
+}
+viewButtons.forEach(b=>b.onclick=()=>switchView(b.dataset.view));
+$('viewFilter').onchange=renderViews;
+$('viewPrint').onclick=()=>window.print();
+$('viewResults').addEventListener('change',e=>{
+ const cb=e.target.closest('[data-vcheck]');if(!cb)return;
+ const a=find(cb.dataset.aid),student=a?.students.find(s=>s.id===cb.dataset.vcheck);
+ if(student){student.done=cb.checked;save();render();renderViews()}
+});
+const originalRender=render;
+render=function(){originalRender();if(currentView!=='assessments')renderViews()};
+;render()})();
+</script></body></html>
