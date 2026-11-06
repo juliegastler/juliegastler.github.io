@@ -9,6 +9,18 @@
 .view-student label{display:inline-flex;flex-direction:row;align-items:center;gap:6px;font-size:13px;margin:5px 12px 0 0}
 .view-student input{width:auto}.view-group{margin-top:22px}.view-group h2{margin:0 0 10px}
 @media print{.toolbar,.tabs,.privacy,.viewbar button{display:none!important}}
+
+.matrix-scroll{overflow-x:auto;max-width:100%;border:1px solid #d7dfe8;border-radius:9px}
+.matrix{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:13px}
+.matrix th,.matrix td{padding:9px 11px;border-right:1px solid #e6ebf1;border-bottom:1px solid #e6ebf1;text-align:center;min-width:95px}
+.matrix th:first-child,.matrix td:first-child{position:sticky;left:0;background:white;text-align:left;min-width:170px;max-width:230px;z-index:2}
+.matrix thead th{position:sticky;top:0;background:#edf2f8;z-index:3;white-space:normal}
+.matrix thead th:first-child{z-index:4;background:#e6edf7}
+.matrix tbody tr:nth-child(even) td{background:#f8fafc}
+.matrix tbody tr:nth-child(even) td:first-child{background:#f8fafc}
+.matrix input[type=checkbox]{width:19px;height:19px;cursor:pointer}
+.matrix .no-entry{color:#aab4bf}
+.matrix-note{font-size:12px;color:#536171;margin:8px 0}
 </style></head><body><main><h1>Missing Assessments</h1><p>Freshman Physics · AP Physics 1 / C: Mechanics</p><div class="privacy">Student information stays in this browser's local storage. Avoid shared devices and unencrypted backups. Clearing browser data can erase the tracker; export a backup regularly.</div><div class="toolbar"><button class="primary" id="addAssessment">+ Add assessment</button><button id="expand">Open all panels</button><button id="collapse">Close all panels</button><button id="directoryToggle">Student directory</button><button id="export">Export backup</button><button id="import">Import backup</button><input class="hidden" id="file" type="file" accept=".json,application/json"><label style="flex-direction:row;align-items:center;gap:6px"> <input id="showDone" type="checkbox" style="width:auto"> Show completed</label></div><section id="directoryPanel" class="directory hidden"><div class="headrow"><h2>Student directory</h2><button id="directoryClose">Close</button></div><div class="toolbar"><button type="button" id="importStudentsCsv">Import students from CSV</button><button type="button" id="csvTemplate">Download CSV template</button><input class="hidden" type="file" id="csvFile" accept=".csv,text/csv"></div><p class="muted">CSV columns: <strong>Student name, Class block, Advisory teacher, Advisory block</strong>. Existing students with matching names will be updated; assessment entries will be kept. Export a backup before importing.</p><p class="muted">Edit a student here to update their information across all assessment panels. Removing a student from the directory does not remove assessment entries.</p><form id="directoryForm" class="form"><label>Student name<input name="name" required placeholder="Student name"></label><label>Class block<input name="block" placeholder="2A"></label><label>Advisory teacher<input name="advisory" placeholder="Teacher"></label><label>Advisory block<input name="advisoryBlock" placeholder="1B"></label><button type="submit" class="primary">Save student</button></form><div id="directoryList"></div></section><div class="tabs" role="navigation" aria-label="Tracker views">
 <button type="button" class="active" data-view="assessments">Assessments</button>
 <button type="button" data-view="class">By Class</button>
@@ -57,13 +69,22 @@ function renderViews(){
    const blocks=selected?[selected]:[...new Set(subset.map(r=>cleanText(r.info.block)||'Unassigned'))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
    content=blocks.map(block=>{
     const inBlock=subset.filter(r=>(cleanText(r.info.block)||'Unassigned')===block);
-    const byAssessment=[...new Set(inBlock.map(r=>r.assessment.id))];
-    return `<section class="view-section"><h3>Class ${esc(block)} · ${inBlock.length} outstanding</h3>`+
-      (byAssessment.length?byAssessment.map(id=>{
-        const a=find(id),students=inBlock.filter(r=>r.assessment.id===id);
-        return `<details open><summary><strong>${esc(a.title)}</strong> <span class="count">${students.length}</span></summary>`+
-          students.map(r=>`<div class="view-student"><strong>${esc(r.info.name||r.student.name)}</strong><div class="student-meta">Advisory: ${esc(r.info.advisory)||'—'} · ${esc(r.info.advisoryBlock)||'—'}</div>${viewCheck(r)}</div>`).join('')+'</details>';
-      }).join(''):'<p class="empty">No missing assessments.</p>')+'</section>';
+    const activeRows=inBlock.filter(r=>!r.student.done);
+    const studentKeys=[...new Set(activeRows.map(r=>cleanText(r.info.name||r.student.name).toLocaleLowerCase()))];
+    const students=studentKeys.map(key=>{
+      const first=activeRows.find(r=>cleanText(r.info.name||r.student.name).toLocaleLowerCase()===key);
+      return {key,name:first.info.name||first.student.name};
+    }).sort((a,b)=>a.name.localeCompare(b.name));
+    const assessments=[...new Set(activeRows.map(r=>r.assessment.id))].map(id=>find(id)).filter(Boolean)
+      .sort((a,b)=>(a.order??0)-(b.order??0)||a.title.localeCompare(b.title));
+    const header=students.map(st=>`<th scope="col">${esc(st.name)}</th>`).join('');
+    const body=assessments.map(a=>`<tr><th scope="row">${esc(a.title)}</th>`+
+      students.map(st=>{
+        const r=inBlock.find(x=>x.assessment.id===a.id&&cleanText(x.info.name||x.student.name).toLocaleLowerCase()===st.key);
+        return `<td>${r?`<input type="checkbox" aria-label="Mark ${esc(st.name)} complete for ${esc(a.title)}" title="Mark completed: ${esc(st.name)} — ${esc(a.title)}" data-vcheck="${esc(r.student.id)}" data-aid="${esc(a.id)}" ${r.student.done?'checked':''}>`:'<span class="no-entry" aria-label="Not missing">—</span>'}</td>`;
+      }).join('')+'</tr>').join('');
+    return `<section class="view-section"><h3>Class ${esc(block)} · ${students.length} students · ${inBlock.filter(r=>!r.student.done).length} outstanding</h3>`+
+      (students.length?`<p class="matrix-note">Only students with outstanding assessments are shown. Check a box when the student completes that assessment; the box disappears from the active grid.</p><div class="matrix-scroll"><table class="matrix"><thead><tr><th scope="col">Assessment</th>${header}</tr></thead><tbody>${body}</tbody></table></div>`:'<p class="empty">No missing assessments.</p>')+'</section>';
    }).join('');
   }else{
    const teachers=[...new Set(subset.map(r=>cleanText(r.info.advisory)||'Unassigned'))].sort((a,b)=>a.localeCompare(b));
