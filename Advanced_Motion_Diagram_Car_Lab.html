@@ -14,7 +14,7 @@
 const $=id=>document.getElementById(id),ns='http://www.w3.org/2000/svg';
 const duration=6,left=65,right=935,low=-20,high=20;
 const names={'speedup-pos':'Speeding up · +','speedup-neg':'Speeding up · −','slowdown-pos':'Slowing down · +','slowdown-neg':'Slowing down · −','fast-pos':'Fast · +','slow-pos':'Slow · +','fast-neg':'Fast · −','slow-neg':'Slow · −','stopped':'Stopped'};
-const models={'speedup-pos':{sign:1,v0:.75,a:.72},'speedup-neg':{sign:-1,v0:.75,a:.72},'slowdown-pos':{sign:1,v0:4.725,a:-.6075},'slowdown-neg':{sign:-1,v0:4.725,a:-.6075},'fast-pos':{sign:1,v0:3.375,a:0},'slow-pos':{sign:1,v0:.65,a:0},'fast-neg':{sign:-1,v0:3.375,a:0},'slow-neg':{sign:-1,v0:.65,a:0},'stopped':{sign:1,v0:0,a:0}};
+const models={'speedup-pos':{sign:1,v0:.75,a:.72},'speedup-neg':{sign:-1,v0:.75,a:.72},'slowdown-pos':{sign:1,v0:4.725,a:-.6075},'slowdown-neg':{sign:-1,v0:4.725,a:-.6075},'fast-pos':{sign:1,v0:3.375,a:0},'slow-pos':{sign:1,v0:1,a:0},'fast-neg':{sign:-1,v0:3.375,a:0},'slow-neg':{sign:-1,v0:1,a:0},'stopped':{sign:1,v0:0,a:0}};
 const palette=['#1769a8','#bf503d','#29835b','#8a57b4','#bb7418','#187f89','#b54783','#555caa'];
 let sequence=[],samples=[],history=[],plan=[],running=false,frame=null,startTime=0,lastTick=0,audio=null,runColor=palette[0];
 const sx=x=>left+(x-low)/(high-low)*(right-left);
