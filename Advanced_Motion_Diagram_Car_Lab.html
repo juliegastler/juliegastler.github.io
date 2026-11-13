@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Advanced Motion Diagram Car Lab</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#182b3b;background:#f4f7fb}*{box-sizing:border-box}body{margin:0;padding:22px}main{max-width:1120px;margin:auto}h1{font-size:clamp(1.45rem,3vw,2rem);margin:0 0 5px}p{margin:0 0 12px;color:#4d6172}.instructions{margin-bottom:20px;font-size:.9rem;line-height:1.5}.panel{background:white;border:1px solid #dbe3eb;border-radius:15px;padding:20px;box-shadow:0 3px 12px #152b4110}.controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:16px}label{font-weight:650;font-size:.93rem}select,input[type=number]{display:block;margin-top:7px;padding:11px 13px;border:1px solid #aebdca;border-radius:9px;background:white;color:#182b3b;font-size:1rem;min-width:min(100%,275px)}button{font:inherit;font-weight:650;border-radius:9px;padding:11px 19px;cursor:pointer;border:1px solid #b5c5d2;background:#fff;color:#20384c}button.primary{background:#1468a4;color:white;border-color:#1468a4}button:disabled{opacity:.5;cursor:not-allowed}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f4ac3d;outline-offset:3px}.toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer;min-height:43px}.toggle input{width:19px;height:19px;accent-color:#1468a4}.plot{border:1px solid #e1e8ee;border-radius:12px;overflow:hidden;background:#fff}svg{display:block;width:100%;height:auto}.status{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px;font-size:.93rem;color:#455c70}.note{font-size:.85rem;color:#526577;margin-top:14px}#arrows line{stroke:#e78a20;stroke-width:3;stroke-linecap:round}#dots circle{fill:#1769a8;stroke:white;stroke-width:2}#dots text{font-size:13px;fill:#36546a;text-anchor:middle}#car-body{fill:#db5547;stroke:#9b3129;stroke-width:2}#car-window{fill:#d9f2fc;stroke:#6a93a5;stroke-width:1.5}.axis{stroke:#31485a;stroke-width:2.5}.tick{stroke:#536879;stroke-width:1.5}.axislabel{font-size:15px;fill:#496072;text-anchor:middle}.section-label{font-size:17px;fill:#233c50;font-weight:700}.sub-label{font-size:13px;fill:#657b8c}@media(max-width:600px){body{padding:10px}.panel{padding:12px}.controls{align-items:stretch}.controls>label:first-child{width:100%}select{width:100%}button{flex:1}}
+.sequence{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px;padding:12px;border:1px solid #dbe3eb;border-radius:10px;min-height:55px}.segment{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;background:#eaf2f9;border-radius:8px;font-size:.88rem}.segment button{padding:2px 7px;font-size:1rem}.helper{font-size:.86rem;color:#526577}.controls>label:first-child{width:auto} .sequence-title{font-weight:700;margin-top:12px}#diagram{min-width:680px}.plot{overflow-x:auto}
+.page-nav a{display:inline-block;padding:9px 14px;border-radius:9px;background:#e5effa;color:#154b7b;font-weight:700;text-decoration:none;border:1px solid #9cbad9}.page-nav a:hover,.page-nav a:focus{background:#cfe4fa;text-decoration:underline}</style>
+</head>
+<body><main><h1>Advanced Motion Diagram Car Lab</h1><p>Build a sequence of motions, press Go, and watch the car's position get marked once each second.</p><p class="instructions">Each leg lasts 6 seconds. Add as many legs as you like, including Stopped. During a stop, dots stack vertically at the same position, randomly upward or downward, and the next motion continues from the end of the stack. Check “Keep motion diagrams” to stack previous runs below the newest one; Reset clears all diagrams. Dots represent equal time intervals, not equal distances. Time labels can be shown or hidden. Sound begins when you press Go; your browser's audio settings may affect volume.</p><p class="page-nav"><a href="Motion_Diagram_Car_Lab.html">Back to Basic Motion Diagram Lab →</a></p><div class="panel"><div class="controls"><label for="motion">Add a motion<select id="motion"><option value="speedup-pos">Speeding up · positive direction</option><option value="speedup-neg">Speeding up · negative direction</option><option value="slowdown-pos">Slowing down · positive direction</option><option value="slowdown-neg">Slowing down · negative direction</option><option value="fast-pos">Fast constant speed · positive direction</option><option value="slow-pos">Slow constant speed · positive direction</option><option value="fast-neg">Fast constant speed · negative direction</option><option value="slow-neg">Slow constant speed · negative direction</option><option value="stopped">Stopped</option></select></label><button id="add">+ Add leg</button><label for="start">Starting position (m)<select id="start"><option value="-15">−15 m</option><option value="-10">−10 m</option><option value="-5">−5 m</option><option value="0" selected>0 m</option><option value="5">+5 m</option><option value="10">+10 m</option><option value="15">+15 m</option></select></label></div><div class="sequence-title">Motion sequence</div><div id="sequence" class="sequence" aria-live="polite"></div><div class="controls"><button class="primary" id="go">▶ Go</button><button id="reset">↺ Reset</button><button id="clear-sequence">Clear legs</button><label class="toggle" for="keep"><input type="checkbox" id="keep">Keep motion diagrams between runs</label><label class="toggle" for="show-arrows"><input type="checkbox" id="show-arrows">Show arrows between dots</label><label class="toggle" for="show-acceleration"><input type="checkbox" id="show-acceleration">Show acceleration arrows</label><label class="toggle" for="show-times"><input type="checkbox" id="show-times" checked>Show time labels</label><label class="toggle" for="sound"><input type="checkbox" id="sound" checked>Beep each second</label></div><div class="plot"><svg id="diagram" viewBox="0 0 1000 430" role="img" aria-label="Number line showing a moving car and motion diagram dots underneath"><text x="36" y="35" class="section-label">Car position</text><text x="36" y="218" class="section-label">Motion diagram</text><text x="36" y="239" class="sub-label">One dot at each 1-second interval (including the start)</text><line x1="65" y1="128" x2="935" y2="128" class="axis"/><path d="M935 128 l-12 -6 v12 z" fill="#31485a"/><g id="ticks"></g><g id="car" transform="translate(0 0)"><g id="car-direction"><path id="car-body" d="M-32 -24 H-19 L-10 -40 H15 L27 -24 H49 V-7 H-32 Z"/><path id="car-window" d="M-8 -36 H12 L20 -25 H-15 Z"/><circle cx="-20" cy="-7" r="8" fill="#263846"/><circle cx="36" cy="-7" r="8" fill="#263846"/><circle cx="-20" cy="-7" r="3" fill="#c6d2db"/><circle cx="36" cy="-7" r="3" fill="#c6d2db"/><rect x="43" y="-19" width="7" height="6" rx="2" fill="#f6d178"/></g></g><g id="arrows"></g><g id="dots"></g><text id="position-label" x="500" y="184" class="axislabel">Position (m) →</text></svg></div></div></main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),ns='http://www.w3.org/2000/svg';
+const duration=6,left=65,right=935,low=-20,high=20;
+const names={'speedup-pos':'Speeding up · +','speedup-neg':'Speeding up · −','slowdown-pos':'Slowing down · +','slowdown-neg':'Slowing down · −','fast-pos':'Fast · +','slow-pos':'Slow · +','fast-neg':'Fast · −','slow-neg':'Slow · −','stopped':'Stopped'};
+const models={'speedup-pos':{sign:1,v0:.75,a:.72},'speedup-neg':{sign:-1,v0:.75,a:.72},'slowdown-pos':{sign:1,v0:4.725,a:-.6075},'slowdown-neg':{sign:-1,v0:4.725,a:-.6075},'fast-pos':{sign:1,v0:3.375,a:0},'slow-pos':{sign:1,v0:.65,a:0},'fast-neg':{sign:-1,v0:3.375,a:0},'slow-neg':{sign:-1,v0:.65,a:0},'stopped':{sign:1,v0:0,a:0}};
+const palette=['#1769a8','#bf503d','#29835b','#8a57b4','#bb7418','#187f89','#b54783','#555caa'];
+let sequence=[],samples=[],history=[],plan=[],running=false,frame=null,startTime=0,lastTick=0,audio=null,runColor=palette[0];
+const sx=x=>left+(x-low)/(high-low)*(right-left);
+function node(tag,attrs,parent){const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.appendChild(e);return e}
+for(let x=-20;x<=20;x+=5){let px=sx(x);node('line',{x1:px,y1:120,x2:px,y2:136,class:'tick'},$('ticks'));let t=node('text',{x:px,y:155,class:'axislabel'},$('ticks'));t.textContent=x}
+function buildPlan(){let p=[],x=Number($('start').value),offset=0;for(const key of sequence){let m=models[key],stackDir=key==='stopped'?(Math.random()<.5?-1:1):0; p.push({key,m,x,offset,stackDir});x+=m.sign*(m.v0*duration+.5*m.a*duration*duration);if(stackDir)offset+=stackDir*duration*12;}return p}
+function point(t,p=plan){if(!p.length)return{x:Number($('start').value),offset:0,sign:1};const i=Math.max(0,Math.min(Math.floor(t/duration),p.length-1)),seg=p[i],dt=Math.max(0,t-i*duration);return{x:seg.x+seg.m.sign*(seg.m.v0*dt+.5*seg.m.a*dt*dt),offset:seg.offset+seg.stackDir*dt*12,sign:seg.m.sign}}
+function placeCar(t){let p=point(t);$('car').setAttribute('transform',`translate(${sx(p.x)} 115)`);$('car-direction').setAttribute('transform',`scale(${p.sign} 1)`)}
+function beep(){if(!$('sound').checked)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();let o=audio.createOscillator(),g=audio.createGain(),now=audio.currentTime;o.type='sine';o.frequency.value=720;g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(.13,now+.01);g.gain.exponentialRampToValueAtTime(.0001,now+.11);o.connect(g);g.connect(audio.destination);o.start(now);o.stop(now+.12)}catch(e){}}
+function renderSequence(){const box=$('sequence');box.replaceChildren();if(!sequence.length){let t=document.createElement('span');t.className='helper';t.textContent='Add legs to build a motion sequence.';box.append(t)}sequence.forEach((key,i)=>{let chip=document.createElement('span');chip.className='segment';let txt=document.createElement('span');txt.textContent=`${i+1}. ${names[key]}`;chip.append(txt);let up=document.createElement('button');up.textContent='↑';up.title='Move leg earlier';up.disabled=running||i===0;up.onclick=()=>{[sequence[i-1],sequence[i]]=[sequence[i],sequence[i-1]];renderSequence()};chip.append(up);let down=document.createElement('button');down.textContent='↓';down.title='Move leg later';down.disabled=running||i===sequence.length-1;down.onclick=()=>{[sequence[i+1],sequence[i]]=[sequence[i],sequence[i+1]];renderSequence()};chip.append(down);let remove=document.createElement('button');remove.textContent='×';remove.title='Remove leg';remove.disabled=running;remove.onclick=()=>{sequence.splice(i,1);renderSequence()};chip.append(remove);box.append(chip)})}
+function legOfInterval(t, p){
+  // Interval (t-1,t) belongs to the leg that contains its midpoint.
+  return Math.min(p.length-1,Math.floor((t-.5)/duration));
+}
+function renderDots(){
+ const dots=$('dots'),arrows=$('arrows');dots.replaceChildren();arrows.replaceChildren();
+ const sets=[{samples,plan,color:runColor},...history.slice().reverse()].filter(s=>s.samples.length);
+ const rowHeights=sets.map(s=>{let offsets=s.samples.map(t=>point(t,s.plan).offset);return Math.max(145,Math.max(...offsets)-Math.min(...offsets)+140)});
+ let bases=[],cursor=320;
+ for(let i=0;i<sets.length;i++){
+  const offs=sets[i].samples.map(t=>point(t,sets[i].plan).offset);
+  bases.push(cursor-Math.min(...offs));cursor+=rowHeights[i];
+ }
+ $('diagram').setAttribute('viewBox',`0 0 1000 ${Math.max(430,cursor+25)}`);
+ sets.forEach((set,row)=>{
+  const base=bases[row],arr=set.samples.map(t=>({t,...point(t,set.plan)}));
+  if($('show-acceleration').checked){
+   for(let i=1;i<arr.length-1;i++){
+    const a=arr[i-1],b=arr[i],c=arr[i+1];
+    if(b.t-a.t!==1||c.t-b.t!==1)continue;
+    // Acceleration arrows require two intervals wholly within the same leg.
+    if(legOfInterval(b.t,set.plan)!==legOfInterval(c.t,set.plan))continue;
+    const leg=set.plan[legOfInterval(b.t,set.plan)];
+    if(leg.key==='stopped')continue;
+    const change=(c.x-b.x)-(b.x-a.x);
+    if(Math.abs(change)<1e-8)continue;
+    const len=1.5*Math.abs(sx(change)-sx(0)),sgn=Math.sign(change),center=sx(b.x);
+    const ay=base+b.offset-19,begin=center-sgn*len/2,end=center+sgn*len/2;
+    node('line',{x1:begin,y1:ay,x2:end-sgn*10,y2:ay,style:`stroke:${set.color};stroke-width:3;stroke-linecap:round`},arrows);
+    node('path',{d:`M ${end} ${ay} L ${end-sgn*13} ${ay-7} L ${end-sgn*13} ${ay+7} Z`,fill:set.color},arrows);
+   }
+  }
+  arr.forEach((p,i)=>{
+   const x=sx(p.x),y=base+p.offset;
+   if(i&&$('show-arrows').checked){
+    const prev=arr[i-1],from=sx(prev.x),to=x,sgn=Math.sign(to-from);
+    if(Math.abs(to-from)>24){
+     const tip=to-sgn*9,tail=tip-sgn*15;
+     node('line',{x1:from+sgn*10,y1:y,x2:tail,y2:y,style:`stroke:${set.color};stroke-width:3;stroke-linecap:round`},arrows);
+     node('path',{d:`M ${tip} ${y} L ${tail} ${y-9} L ${tail} ${y+9} Z`,fill:set.color},arrows);
+    }
+   }
+   node('circle',{cx:x,cy:y,r:7,style:`fill:${set.color};stroke:white;stroke-width:2`},dots);
+  });
+  if(!$('show-times').checked)return;
+  // Place labels with bounding-box collision avoidance. Stop labels follow the
+  // vertical stack and appear beside it; moving labels prefer below their dot.
+  const occupied=[];
+  const fits=(x,y,w,h)=>!occupied.some(r=>x<r.x+r.w+4&&x+w+4>r.x&&y<r.y+r.h+3&&y+h+3>r.y);
+  const place=(p,x,y,anchor)=>{
+   const text=`${p.t} s`,w=text.length*7.2+3,h=16;
+   const bx=anchor==='start'?x:anchor==='end'?x-w:x-w/2,by=y-12;
+   if(!fits(bx,by,w,h))return false;
+   const lab=node('text',{x,y,'text-anchor':anchor,style:`fill:${set.color};font-size:13px`},dots);
+   lab.textContent=text;occupied.push({x:bx,y:by,w,h});return true;
+  };
+  // Stop labels first: they must be beside their corresponding stacked dots.
+  const isStop=p=>p.t>0&&set.plan[legOfInterval(p.t,set.plan)]?.key==='stopped';
+  for(const p of arr.filter(isStop)){
+   const x=sx(p.x),y=base+p.offset;
+   const candidates=[[x+15,y+5,'start'],[x-15,y+5,'end'],[x+15,y-9,'start'],[x-15,y-9,'end']];
+   for(const [lx,ly,anchor] of candidates){if(place(p,lx,ly,anchor))break}
+  }
+  for(const p of arr.filter(p=>!isStop(p))){
+   const x=sx(p.x),y=base+p.offset;
+   // Progressive vertical staggering handles slow movement and revisits.
+   const candidates=[];
+   for(let level=0;level<7;level++){
+    candidates.push([x,y+27+level*18,'middle']);
+    candidates.push([x,y-18-level*18,'middle']);
+   }
+   candidates.push([x+17,y+5,'start'],[x-17,y+5,'end']);
+   for(const [lx,ly,anchor] of candidates){if(place(p,lx,ly,anchor))break}
+  }
+ });
+}
+function stop(){running=false;if(frame!==null)cancelAnimationFrame(frame);frame=null;$('go').disabled=false;$('add').disabled=false;$('start').disabled=false;$('clear-sequence').disabled=false;renderSequence()}
+function tick(now){if(!running)return;let elapsed=Math.max(0,Math.min((now-startTime)/1000,plan.length*duration));while(lastTick<Math.floor(elapsed)){lastTick++;samples.push(lastTick);beep();renderDots()}placeCar(elapsed);if(elapsed>=plan.length*duration){stop();return}frame=requestAnimationFrame(tick)}
+function clear(clearHistory=true){stop();samples=[];plan=[];lastTick=0;if(clearHistory)history=[];runColor=palette[history.length%palette.length];placeCar(0);renderDots()}
+$('add').onclick=()=>{if(running)return;sequence.push($('motion').value);renderSequence()};
+$('clear-sequence').onclick=()=>{if(running)return;sequence=[];renderSequence()};
+$('go').onclick=()=>{if(running||!sequence.length)return;if($('keep').checked&&samples.length)history.push({samples:[...samples],plan,color:runColor});clear(!$('keep').checked);plan=buildPlan();samples=[0];running=true;$('go').disabled=true;$('add').disabled=true;$('start').disabled=true;$('clear-sequence').disabled=true;renderSequence();renderDots();placeCar(0);beep();startTime=performance.now();frame=requestAnimationFrame(tick)};
+$('reset').onclick=()=>clear(true);
+$('show-arrows').onchange=renderDots;$('show-acceleration').onchange=renderDots;$('show-times').onchange=renderDots;
+$('start').onchange=()=>{if(!running)placeCar(0)};
+renderSequence();clear();
+})();
+</script></body></html>
