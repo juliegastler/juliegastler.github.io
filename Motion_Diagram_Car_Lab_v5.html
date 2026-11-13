@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motion Diagram Car Lab</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#182b3b;background:#f4f7fb}*{box-sizing:border-box}body{margin:0;padding:22px}main{max-width:1120px;margin:auto}h1{font-size:clamp(1.45rem,3vw,2rem);margin:0 0 5px}p{margin:0 0 20px;color:#4d6172}.panel{background:white;border:1px solid #dbe3eb;border-radius:15px;padding:20px;box-shadow:0 3px 12px #152b4110}.controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:16px}label{font-weight:650;font-size:.93rem}select,input[type=number]{display:block;margin-top:7px;padding:11px 13px;border:1px solid #aebdca;border-radius:9px;background:white;color:#182b3b;font-size:1rem;min-width:min(100%,275px)}button{font:inherit;font-weight:650;border-radius:9px;padding:11px 19px;cursor:pointer;border:1px solid #b5c5d2;background:#fff;color:#20384c}button.primary{background:#1468a4;color:white;border-color:#1468a4}button:disabled{opacity:.5;cursor:not-allowed}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f4ac3d;outline-offset:3px}.toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer;min-height:43px}.toggle input{width:19px;height:19px;accent-color:#1468a4}.plot{border:1px solid #e1e8ee;border-radius:12px;overflow:hidden;background:#fff}svg{display:block;width:100%;height:auto}.status{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px;font-size:.93rem;color:#455c70}.note{font-size:.85rem;color:#526577;margin-top:14px}#arrows line{stroke:#e78a20;stroke-width:3;stroke-linecap:round}#dots circle{fill:#1769a8;stroke:white;stroke-width:2}#dots text{font-size:13px;fill:#36546a;text-anchor:middle}#car-body{fill:#db5547;stroke:#9b3129;stroke-width:2}#car-window{fill:#d9f2fc;stroke:#6a93a5;stroke-width:1.5}.axis{stroke:#31485a;stroke-width:2.5}.tick{stroke:#536879;stroke-width:1.5}.axislabel{font-size:15px;fill:#496072;text-anchor:middle}.section-label{font-size:17px;fill:#233c50;font-weight:700}.sub-label{font-size:13px;fill:#657b8c}@media(max-width:600px){body{padding:10px}.panel{padding:12px}.controls{align-items:stretch}.controls>label:first-child{width:100%}select{width:100%}button{flex:1}}
+</style>
+</head>
+<body><main><h1>Motion Diagram Car Lab</h1><p>Choose a motion, press Go, and watch the car's position get marked once each second.</p><div class="panel"><div class="controls"><label for="motion">Choose a car's motion<select id="motion"><option value="speedup-pos">Speeding up · positive direction</option><option value="speedup-neg">Speeding up · negative direction</option><option value="slowdown-pos">Slowing down · positive direction</option><option value="slowdown-neg">Slowing down · negative direction</option><option value="fast-pos">Fast constant speed · positive direction</option><option value="slow-pos">Slow constant speed · positive direction</option><option value="fast-neg">Fast constant speed · negative direction</option><option value="slow-neg">Slow constant speed · negative direction</option></select></label><label for="start">Starting position (m)<select id="start"><option value="-15">−15 m</option><option value="-10">−10 m</option><option value="-5">−5 m</option><option value="0" selected>0 m</option><option value="5">+5 m</option><option value="10">+10 m</option><option value="15">+15 m</option></select></label><button class="primary" id="go">▶ Go</button><button id="reset">↺ Reset</button><label class="toggle" for="keep"><input type="checkbox" id="keep">Keep motion diagrams between runs</label><label class="toggle" for="show-arrows"><input type="checkbox" id="show-arrows">Show arrows between dots</label><label class="toggle" for="sound"><input type="checkbox" id="sound" checked>Beep each second</label></div><div class="plot"><svg id="diagram" viewBox="0 0 1000 430" role="img" aria-label="Number line showing a moving car and motion diagram dots underneath"><text x="36" y="35" class="section-label">Car position</text><text x="36" y="218" class="section-label">Motion diagram</text><text x="36" y="239" class="sub-label">One dot at each 1-second interval (including the start)</text><line x1="65" y1="128" x2="935" y2="128" class="axis"/><path d="M935 128 l-12 -6 v12 z" fill="#31485a"/><g id="ticks"></g><g id="car" transform="translate(0 0)"><g id="car-direction"><path id="car-body" d="M-32 -24 H-19 L-10 -40 H15 L27 -24 H49 V-7 H-32 Z"/><path id="car-window" d="M-8 -36 H12 L20 -25 H-15 Z"/><circle cx="-20" cy="-7" r="8" fill="#263846"/><circle cx="36" cy="-7" r="8" fill="#263846"/><circle cx="-20" cy="-7" r="3" fill="#c6d2db"/><circle cx="36" cy="-7" r="3" fill="#c6d2db"/><rect x="43" y="-19" width="7" height="6" rx="2" fill="#f6d178"/></g></g><g id="arrows"></g><g id="dots"></g><text id="position-label" x="500" y="410" class="axislabel">Position (m) →</text></svg></div><div class="status"><span id="status" aria-live="polite">Ready · t = 0 s</span><span id="count">Dots: 0</span></div><div class="note">Each run lasts 6 seconds. Check “Keep motion diagrams” to stack previous runs below the newest one; Reset clears all diagrams. Dots represent equal time intervals, not equal distances. Sound begins when you press Go; your browser's audio settings may affect volume.</div></div></main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), svgNS='http://www.w3.org/2000/svg';
+const duration=6, left=65,right=935,low=-20,high=20;
+const motion=$('motion'),start=$('start'),keep=$('keep'),go=$('go'),reset=$('reset'),show=$('show-arrows'),sound=$('sound'),car=$('car'),direction=$('car-direction'),dots=$('dots'),arrows=$('arrows'),status=$('status'),count=$('count');
+const models={
+'speedup-pos':{sign:1,v0:.75,a:.72},'speedup-neg':{sign:-1,v0:.75,a:.72},
+'slowdown-pos':{sign:1,v0:4.725,a:-.6075},'slowdown-neg':{sign:-1,v0:4.725,a:-.6075},
+'fast-pos':{sign:1,v0:3.375,a:0},'slow-pos':{sign:1,v0:.65,a:0},
+'fast-neg':{sign:-1,v0:3.375,a:0},'slow-neg':{sign:-1,v0:.65,a:0}};
+let model=models[motion.value],x0=0,samples=[],history=[],running=false,frame=null,startTime=0,lastTick=0,audio=null,runColor='#1769a8';
+const palette=['#1769a8','#bf503d','#29835b','#8a57b4','#bb7418','#187f89','#b54783','#555caa'];
+const sx=x=>left+(x-low)/(high-low)*(right-left);
+const position=(t,m=model,origin=x0)=>origin+m.sign*(m.v0*t+.5*m.a*t*t);
+function node(tag,attrs,parent){const e=document.createElementNS(svgNS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.appendChild(e);return e}
+for(let x=-20;x<=20;x+=5){const px=sx(x);node('line',{x1:px,y1:120,x2:px,y2:136,class:'tick'},$('ticks'));const t=node('text',{x:px,y:155,class:'axislabel'},$('ticks'));t.textContent=x;}
+function placeCar(t){car.setAttribute('transform',`translate(${sx(position(t))} 115)`);direction.setAttribute('transform',`scale(${model.sign} 1)`)}
+function beep(){if(!sound.checked)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();const osc=audio.createOscillator(),gain=audio.createGain(),now=audio.currentTime;osc.type='sine';osc.frequency.value=720;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.13,now+.01);gain.gain.exponentialRampToValueAtTime(.0001,now+.11);osc.connect(gain);gain.connect(audio.destination);osc.start(now);osc.stop(now+.12)}catch(e){}}
+function renderDots(){
+ dots.replaceChildren();arrows.replaceChildren();
+ // Newest run stays at the top; previous runs are stacked below it.
+ const sets=[{samples,model,x0,color:runColor},...history.slice().reverse()].filter(set=>set.samples.length);
+ const rowHeight=105, firstY=310;
+ const height=Math.max(430,firstY+Math.max(1,sets.length-1)*rowHeight+95);
+ $('diagram').setAttribute('viewBox',`0 0 1000 ${height}`);
+ $('position-label').setAttribute('y',height-20);
+ for(const [row,set] of sets.entries()){
+  const y=firstY+row*rowHeight;
+  for(let i=0;i<set.samples.length;i++){
+   const x=sx(position(set.samples[i],set.model,set.x0));
+   node('circle',{cx:x,cy:y,r:7,style:`fill:${set.color};stroke:white;stroke-width:2`},dots);
+   const label=node('text',{x,y:y+27,style:`fill:${set.color}`},dots);label.textContent=`${set.samples[i]} s`;
+   if(i&&show.checked){const from=sx(position(set.samples[i-1],set.model,set.x0)),to=x,sgn=Math.sign(to-from);
+    if(Math.abs(to-from)>24){const tip=to-sgn*9,base=tip-sgn*15;node('line',{x1:from+sgn*10,y1:y,x2:base,y2:y,style:`stroke:${set.color};stroke-width:3;stroke-linecap:round`},arrows);node('path',{d:`M ${tip} ${y} L ${base} ${y-9} L ${base} ${y+9} Z`,fill:set.color},arrows);}
+   }
+  }
+ }
+ count.textContent=`Dots: ${sets.reduce((n,set)=>n+set.samples.length,0)}`;
+}
+function stop(){running=false;if(frame!==null)cancelAnimationFrame(frame);frame=null;go.disabled=false;motion.disabled=false;start.disabled=false}
+function tick(now){if(!running)return;const elapsed=Math.min((now-startTime)/1000,duration);while(lastTick<Math.floor(elapsed)){lastTick++;samples.push(lastTick);beep();renderDots()}placeCar(elapsed);status.textContent=`${elapsed>=duration?'Finished':'Moving'} · t = ${elapsed.toFixed(1)} s`;if(elapsed>=duration){stop();return}frame=requestAnimationFrame(tick)}
+function clear(clearHistory=true){
+ stop();model=models[motion.value];x0=Number(start.value);samples=[];lastTick=0;
+ if(clearHistory)history=[];
+ runColor=palette[history.length%palette.length];placeCar(0);renderDots();status.textContent='Ready · t = 0 s';
+}
+go.addEventListener('click',()=>{
+ if(running)return;
+ const saved=keep.checked&&samples.length>0;
+ if(saved)history.push({samples:[...samples],model,x0,color:runColor});
+ clear(!keep.checked);
+ running=true;go.disabled=true;motion.disabled=true;start.disabled=true;
+ samples=[0];renderDots();beep();startTime=performance.now();frame=requestAnimationFrame(tick);
+});
+reset.addEventListener('click',()=>clear(true));
+motion.addEventListener('change',()=>{if(keep.checked&&samples.length)history.push({samples:[...samples],model,x0,color:runColor});clear(!keep.checked)});
+start.addEventListener('change',()=>{if(keep.checked&&samples.length)history.push({samples:[...samples],model,x0,color:runColor});clear(!keep.checked)});
+show.addEventListener('change',renderDots);
+clear();
+})();
+</script></body></html>
