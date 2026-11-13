@@ -16,8 +16,8 @@ const motion=$('motion'),start=$('start'),keep=$('keep'),go=$('go'),reset=$('res
 const models={
 'speedup-pos':{sign:1,v0:.75,a:.72},'speedup-neg':{sign:-1,v0:.75,a:.72},
 'slowdown-pos':{sign:1,v0:4.725,a:-.6075},'slowdown-neg':{sign:-1,v0:4.725,a:-.6075},
-'fast-pos':{sign:1,v0:3.375,a:0},'slow-pos':{sign:1,v0:.65,a:0},
-'fast-neg':{sign:-1,v0:3.375,a:0},'slow-neg':{sign:-1,v0:.65,a:0}};
+'fast-pos':{sign:1,v0:3.375,a:0},'slow-pos':{sign:1,v0:1,a:0},
+'fast-neg':{sign:-1,v0:3.375,a:0},'slow-neg':{sign:-1,v0:1,a:0}};
 let model=models[motion.value],x0=0,samples=[],history=[],running=false,frame=null,startTime=0,lastTick=0,audio=null,runColor='#1769a8';
 const palette=['#1769a8','#bf503d','#29835b','#8a57b4','#bb7418','#187f89','#b54783','#555caa'];
 const sx=x=>left+(x-low)/(high-low)*(right-left);
