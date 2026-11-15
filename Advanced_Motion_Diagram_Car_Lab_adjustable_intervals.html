@@ -26,7 +26,7 @@ function buildPlan(){
   const {key,duration}=leg,m=models[key],stackDir=key==='stopped'?(Math.random()<.5?-1:1):0;
   p.push({key,m,x,offset,stackDir,start,duration});
   x+=m.sign*(m.v0*duration+.5*m.a*duration*duration);
-  if(stackDir)offset+=stackDir*duration*12;
+  if(stackDir)offset+=stackDir*duration*16;
   start+=duration;
  }
  return p;
@@ -41,7 +41,7 @@ function point(t,p=plan){
  if(!p.length)return{x:Number($('start').value),offset:0,sign:1};
  const seg=p[planIndex(t,p)],dt=Math.max(0,Math.min(seg.duration,t-seg.start));
  return{x:seg.x+seg.m.sign*(seg.m.v0*dt+.5*seg.m.a*dt*dt),
- offset:seg.offset+seg.stackDir*dt*12,sign:seg.m.sign};
+ offset:seg.offset+seg.stackDir*dt*16,sign:seg.m.sign};
 }
 function totalDuration(p){return p.reduce((sum,leg)=>sum+leg.duration,0)}
 function placeCar(t){let p=point(t);$('car').setAttribute('transform',`translate(${sx(p.x)} 115)`);$('car-direction').setAttribute('transform',`scale(${p.sign} 1)`)}
